@@ -5,6 +5,7 @@ import kr.doridos.dosticket.domain.user.dto.UserSignUpRequest;
 import kr.doridos.dosticket.domain.user.exception.NicknameAlreadyExistsException;
 import kr.doridos.dosticket.domain.user.exception.UserAlreadySignUpException;
 import kr.doridos.dosticket.domain.user.repository.UserRepository;
+import kr.doridos.dosticket.exception.ErrorCode;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,12 +29,12 @@ public class UserService {
 
     private void validateDuplicateByEmail(final String email) {
         if (userRepository.existsByEmail(email))
-            throw new UserAlreadySignUpException();
+            throw new UserAlreadySignUpException(ErrorCode.USER_ALREADY_SIGNUP);
     }
 
     private void validateDuplicateByNickname(final String nickname) {
         if (userRepository.existsByNickname(nickname))
-            throw new NicknameAlreadyExistsException();
+            throw new NicknameAlreadyExistsException(ErrorCode.NICKNAME_ALREADY_EXISTS);
     }
 }
 

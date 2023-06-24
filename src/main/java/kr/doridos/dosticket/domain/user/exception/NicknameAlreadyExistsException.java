@@ -1,4 +1,14 @@
 package kr.doridos.dosticket.domain.user.exception;
 
-public class NicknameAlreadyExistsException extends RuntimeException {
+import kr.doridos.dosticket.exception.BusinessException;
+import kr.doridos.dosticket.exception.ErrorCode;
+
+public class NicknameAlreadyExistsException extends BusinessException {
+    public NicknameAlreadyExistsException(String message, ErrorCode errorCode) {
+        super(message, ErrorCode.NICKNAME_ALREADY_EXISTS);
+    }
+
+    public NicknameAlreadyExistsException(ErrorCode errorCode) {
+        super(ErrorCode.NICKNAME_ALREADY_EXISTS);
+    }
 }
