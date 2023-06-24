@@ -1,4 +1,14 @@
 package kr.doridos.dosticket.domain.user.exception;
 
-public class UserAlreadySignUpException extends RuntimeException {
+import kr.doridos.dosticket.exception.BusinessException;
+import kr.doridos.dosticket.exception.ErrorCode;
+
+public class UserAlreadySignUpException extends BusinessException {
+    public UserAlreadySignUpException(String message, ErrorCode errorCode) {
+        super(message, ErrorCode.USER_ALREADY_SIGNUP);
+    }
+
+    public UserAlreadySignUpException(ErrorCode errorCode) {
+        super(ErrorCode.NICKNAME_ALREADY_EXISTS);
+    }
 }
