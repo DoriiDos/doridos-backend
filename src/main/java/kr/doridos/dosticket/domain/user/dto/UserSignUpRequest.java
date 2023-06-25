@@ -1,10 +1,12 @@
 package kr.doridos.dosticket.domain.user.dto;
 
+import kr.doridos.dosticket.domain.user.EncodedPassword;
 import kr.doridos.dosticket.domain.user.User;
 import kr.doridos.dosticket.domain.user.UserType;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.Length;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
@@ -43,6 +45,6 @@ public class UserSignUpRequest {
     }
 
     public User toEntity() {
-        return User.of(email, password, nickname, phoneNumber, userType);
+        return User.of(email, EncodedPassword.encode(password), nickname, phoneNumber, userType);
     }
 }
