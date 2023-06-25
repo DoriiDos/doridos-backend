@@ -1,6 +1,6 @@
 package kr.doridos.dosticket.domain.user.repository;
 
-import kr.doridos.dosticket.config.JpaAuditingConfiguration;
+import kr.doridos.dosticket.config.JpaAuditingConfig;
 import kr.doridos.dosticket.domain.user.User;
 import kr.doridos.dosticket.domain.user.UserType;
 
@@ -14,7 +14,7 @@ import org.springframework.context.annotation.Import;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
-@Import(JpaAuditingConfiguration.class)
+@Import(JpaAuditingConfig.class)
 class UserRepositoryTest {
 
     @Autowired
