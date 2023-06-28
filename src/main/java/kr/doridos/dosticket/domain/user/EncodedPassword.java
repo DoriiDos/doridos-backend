@@ -13,7 +13,7 @@ public class EncodedPassword {
         return encoder.encode(password);
     }
 
-    public static boolean matches(final String password) {
-        return encoder.matches(password, encode(password));
+    public static boolean matches(String rawPassword, String encodePassword) {
+        return encoder.matches(rawPassword, encodePassword);
     }
 }
