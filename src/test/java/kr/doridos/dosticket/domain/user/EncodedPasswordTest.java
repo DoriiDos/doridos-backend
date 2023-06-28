@@ -16,7 +16,7 @@ class EncodedPasswordTest {
 
         assertAll(
                 () -> assertNotEquals(password, encodePassword),
-                () -> assertTrue(EncodedPassword.matches(password),encodePassword)
+                () -> assertTrue(EncodedPassword.matches(password, encodePassword))
         );
     }
 }
