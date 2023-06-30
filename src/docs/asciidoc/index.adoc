@@ -1,0 +1,26 @@
+= User API 문서
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 2
+
+== User 회원가입
+
+=== Request
+
+include::{snippets}/userSignUp/http-request.adoc[]
+
+=== Response
+
+include::{snippets}/userSignUp/http-response.adoc[]
+
+== User 로그인
+
+=== Request
+
+include::{snippets}/userSignIn/http-request.adoc[]
+
+=== Response
+
+include::{snippets}/userSignIn/http-response.adoc[]
