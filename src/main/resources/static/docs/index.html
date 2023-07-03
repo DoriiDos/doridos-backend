@@ -458,6 +458,12 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_response_2">Response</a></li>
 </ul>
 </li>
+<li><a href="#_user_정보_조회">User 정보 조회</a>
+<ul class="sectlevel2">
+<li><a href="#_request_3">Request</a></li>
+<li><a href="#_response_3">Response</a></li>
+</ul>
+</li>
 </ul>
 </div>
 </div>
@@ -489,7 +495,7 @@ Host: localhost:8080
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code data-lang="http" class="language-http hljs">HTTP/1.1 201 Created
-Location: /users/4
+Location: /users/6
 X-Content-Type-Options: nosniff
 X-XSS-Protection: 1; mode=block
 Cache-Control: no-cache, no-store, max-age=0, must-revalidate
@@ -535,7 +541,44 @@ X-Frame-Options: SAMEORIGIN
 Content-Length: 181
 
 {
-  "token" : "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJlbWFpbEBlbWFpbC5jb20iLCJSb2xlIjoiVVNFUiIsImlhdCI6MTY4ODEyMjQ3MiwiZXhwIjoxNjg4MTIyODMyfQ.g8sSmYbHo4K0T9V68mvRKvpmq97NEjws_AQ0MKOOGJA"
+  "token" : "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJlbWFpbEBlbWFpbC5jb20iLCJSb2xlIjoiVVNFUiIsImlhdCI6MTY4ODM4MTQyMSwiZXhwIjoxNjg4MzgxNzgxfQ.OdJix_O33K7WY9jiRLK-48xpl6s6OW1gOZk1ukpqFjk"
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_user_정보_조회">User 정보 조회</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_request_3">Request</h3>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code data-lang="http" class="language-http hljs">GET /users/me HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJlbWFpbEAxMjMuY29tIiwiUm9sZSI6IlVTRVIiLCJpYXQiOjE2ODgzODE0MjMsImV4cCI6MTY4ODM4MTc4M30.rLAbokcIeAhPIooPjBtaSCt4RmMNAJoGFyhXYdlMIqo
+Host: localhost:8080</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_response_3">Response</h3>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code data-lang="http" class="language-http hljs">HTTP/1.1 200 OK
+Content-Type: application/json
+X-Content-Type-Options: nosniff
+X-XSS-Protection: 1; mode=block
+Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+Pragma: no-cache
+Expires: 0
+X-Frame-Options: SAMEORIGIN
+Content-Length: 87
+
+{
+  "email" : "email@123.com",
+  "nickname" : "haha",
+  "phoneNumber" : "01012341234"
 }</code></pre>
 </div>
 </div>
@@ -546,7 +589,7 @@ Content-Length: 181
 <div id="footer">
 <div id="footer-text">
 Version 0.0.1-SNAPSHOT<br>
-Last updated 2023-06-30 19:53:52 +0900
+Last updated 2023-07-03 19:49:22 +0900
 </div>
 </div>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/styles/github.min.css">
