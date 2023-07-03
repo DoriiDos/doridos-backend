@@ -1,6 +1,7 @@
 package kr.doridos.dosticket.domain.user.service;
 
 import kr.doridos.dosticket.domain.user.User;
+import kr.doridos.dosticket.domain.user.dto.UserInfoResponse;
 import kr.doridos.dosticket.domain.user.dto.UserSignUpRequest;
 import kr.doridos.dosticket.domain.user.exception.NicknameAlreadyExistsException;
 import kr.doridos.dosticket.domain.user.exception.UserAlreadySignUpException;
@@ -25,6 +26,10 @@ public class UserService {
 
         final User savedUser = userRepository.save(userSignUpRequest.toEntity());
         return savedUser.getId();
+    }
+
+    public UserInfoResponse getUserInfo(User user) {
+        return UserInfoResponse.of(user);
     }
 
     private void validateDuplicateByEmail(final String email) {

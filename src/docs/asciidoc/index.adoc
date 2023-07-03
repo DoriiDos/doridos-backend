@@ -24,3 +24,14 @@ include::{snippets}/userSignIn/http-request.adoc[]
 === Response
 
 include::{snippets}/userSignIn/http-response.adoc[]
+
+== User 정보 조회
+
+=== Request
+
+include::{snippets}/getUserInfo/http-request.adoc[]
+
+=== Response
+
+include::{snippets}/getUserInfo/http-response.adoc[]
+
