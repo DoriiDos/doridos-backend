@@ -2,6 +2,7 @@ package kr.doridos.dosticket.domain.user.service;
 
 import kr.doridos.dosticket.domain.user.User;
 import kr.doridos.dosticket.domain.user.UserType;
+import kr.doridos.dosticket.domain.user.dto.UserInfoResponse;
 import kr.doridos.dosticket.domain.user.dto.UserSignUpRequest;
 import kr.doridos.dosticket.domain.user.exception.NicknameAlreadyExistsException;
 import kr.doridos.dosticket.domain.user.exception.UserAlreadySignUpException;
@@ -16,6 +17,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.time.LocalDateTime;
 
 import static org.assertj.core.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.mockito.BDDMockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -67,5 +69,21 @@ class UserServiceTest {
                 .isInstanceOf(UserAlreadySignUpException.class);
 
         then(userRepository).should().existsByEmail(email);
+    }
+
+    @Test
+    @DisplayName("유저의 정보 조회에 성공한다.")
+    void user_getInfo_success() {
+       //given
+        User user = new User("email@email.com","hahaha", "01012341234");
+
+        //when
+        UserInfoResponse userInfoResponse = userService.getUserInfo(user);
+
+        //then
+        assertAll(
+                () -> assertThat(userInfoResponse.getEmail()).isEqualTo(user.getEmail()),
+                () -> assertThat(userInfoResponse.getNickname()).isEqualTo(user.getNickname()),
+                () -> assertThat(userInfoResponse.getPhoneNumber()).isEqualTo(user.getPhoneNumber()));
     }
 }
