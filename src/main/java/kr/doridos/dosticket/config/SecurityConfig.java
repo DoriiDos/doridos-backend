@@ -30,7 +30,7 @@ public class SecurityConfig {
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeHttpRequests()
-                    .antMatchers("/users/**").permitAll()
+                    .antMatchers("/users/signup").permitAll()
                     .antMatchers("/auth/**").permitAll()
                     .antMatchers("/docs/**").permitAll()
                     .antMatchers("/h2-console/**").permitAll()

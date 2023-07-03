@@ -55,6 +55,12 @@ public class User {
         this.userType = userType;
     }
 
+    public User(final String email, final String nickname, final String phoneNumber) {
+        this.email = email;
+        this.nickname = nickname;
+        this.phoneNumber = phoneNumber;
+    }
+
     public static User of(final String email, final String password, final String nickname,
                           final String phoneNumber, final UserType userType) {
         return new User(email, password, nickname, phoneNumber, userType);
