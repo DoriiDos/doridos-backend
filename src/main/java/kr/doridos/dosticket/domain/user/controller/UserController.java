@@ -1,6 +1,7 @@
 package kr.doridos.dosticket.domain.user.controller;
 
 import kr.doridos.dosticket.domain.auth.support.jwt.UserDetailsImpl;
+import kr.doridos.dosticket.domain.user.dto.NicknameRequest;
 import kr.doridos.dosticket.domain.user.dto.UserInfoResponse;
 import kr.doridos.dosticket.domain.user.dto.UserSignUpRequest;
 import kr.doridos.dosticket.domain.user.service.UserService;
@@ -31,5 +32,12 @@ public class UserController {
     public ResponseEntity<UserInfoResponse> getMyInfo(@AuthenticationPrincipal final UserDetailsImpl userDetails) {
         final UserInfoResponse response = userService.getUserInfo(userDetails.getUser());
         return ResponseEntity.ok(response);
+    }
+
+    @PatchMapping("/me/nickname")
+    public ResponseEntity<Void> changeNickname(@RequestBody @Valid final NicknameRequest nicknameRequest,
+                                               @AuthenticationPrincipal final UserDetailsImpl userDetails) {
+        userService.updateNickname(nicknameRequest, userDetails.getEmail());
+        return ResponseEntity.noContent().build();
     }
 }
