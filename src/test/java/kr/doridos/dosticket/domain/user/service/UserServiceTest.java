@@ -2,6 +2,7 @@ package kr.doridos.dosticket.domain.user.service;
 
 import kr.doridos.dosticket.domain.user.User;
 import kr.doridos.dosticket.domain.user.UserType;
+import kr.doridos.dosticket.domain.user.dto.NicknameRequest;
 import kr.doridos.dosticket.domain.user.dto.UserInfoResponse;
 import kr.doridos.dosticket.domain.user.dto.UserSignUpRequest;
 import kr.doridos.dosticket.domain.user.exception.NicknameAlreadyExistsException;
@@ -15,6 +16,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -76,14 +78,26 @@ class UserServiceTest {
     void user_getInfo_success() {
        //given
         User user = new User("email@email.com","hahaha", "01012341234");
-
         //when
         UserInfoResponse userInfoResponse = userService.getUserInfo(user);
-
         //then
         assertAll(
                 () -> assertThat(userInfoResponse.getEmail()).isEqualTo(user.getEmail()),
                 () -> assertThat(userInfoResponse.getNickname()).isEqualTo(user.getNickname()),
                 () -> assertThat(userInfoResponse.getPhoneNumber()).isEqualTo(user.getPhoneNumber()));
+    }
+
+    @Test
+    @DisplayName("기존 닉네임과 변경하려는 닉네임이 같을 때 예외가 발생한다")
+    void user_updateNickname_throwException() {
+        //given
+        NicknameRequest nicknameRequest = new NicknameRequest("hahahoho");
+        User user = new User("email@email.com", "hahahoho", "01012341234");
+
+        given(userRepository.findByEmail(user.getEmail())).willReturn(Optional.of(user));
+        //when, then
+        assertThatThrownBy(() -> userService.updateNickname(nicknameRequest, user.getEmail()))
+                .isInstanceOf(NicknameAlreadyExistsException.class)
+                .hasMessage("이미 존재하는 닉네임입니다.");
     }
 }
