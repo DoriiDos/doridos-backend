@@ -65,4 +65,8 @@ public class User {
                           final String phoneNumber, final UserType userType) {
         return new User(email, password, nickname, phoneNumber, userType);
     }
+
+    public void updateNickname(final String nickname) {
+        this.nickname = nickname;
+    }
 }
