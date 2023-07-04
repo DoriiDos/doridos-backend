@@ -464,6 +464,12 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_response_3">Response</a></li>
 </ul>
 </li>
+<li><a href="#_user_닉네임_변경">User 닉네임 변경</a>
+<ul class="sectlevel2">
+<li><a href="#_request_4">Request</a></li>
+<li><a href="#_response_4">Response</a></li>
+</ul>
+</li>
 </ul>
 </div>
 </div>
@@ -481,9 +487,9 @@ Content-Length: 146
 Host: localhost:8080
 
 {
-  "email" : "email@test.com",
+  "email" : "test@email.com",
   "password" : "123456a!",
-  "nickname" : "도리도스",
+  "nickname" : "도도도도",
   "phoneNumber" : "01012341234",
   "userType" : "USER"
 }</code></pre>
@@ -495,7 +501,7 @@ Host: localhost:8080
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code data-lang="http" class="language-http hljs">HTTP/1.1 201 Created
-Location: /users/6
+Location: /users/8
 X-Content-Type-Options: nosniff
 X-XSS-Protection: 1; mode=block
 Cache-Control: no-cache, no-store, max-age=0, must-revalidate
@@ -541,7 +547,7 @@ X-Frame-Options: SAMEORIGIN
 Content-Length: 181
 
 {
-  "token" : "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJlbWFpbEBlbWFpbC5jb20iLCJSb2xlIjoiVVNFUiIsImlhdCI6MTY4ODM4MTQyMSwiZXhwIjoxNjg4MzgxNzgxfQ.OdJix_O33K7WY9jiRLK-48xpl6s6OW1gOZk1ukpqFjk"
+  "token" : "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJlbWFpbEBlbWFpbC5jb20iLCJSb2xlIjoiVVNFUiIsImlhdCI6MTY4ODQ3MjA0MywiZXhwIjoxNjg4NDcyNDAzfQ.6hvHLKJa_a3AwQe4yrF3wCmx2Fle0-_Jftokl8aBDbA"
 }</code></pre>
 </div>
 </div>
@@ -556,7 +562,7 @@ Content-Length: 181
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code data-lang="http" class="language-http hljs">GET /users/me HTTP/1.1
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJlbWFpbEAxMjMuY29tIiwiUm9sZSI6IlVTRVIiLCJpYXQiOjE2ODgzODE0MjMsImV4cCI6MTY4ODM4MTc4M30.rLAbokcIeAhPIooPjBtaSCt4RmMNAJoGFyhXYdlMIqo
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJlbWFpbEB0ZXN0LmNvbSIsIlJvbGUiOiJVU0VSIiwiaWF0IjoxNjg4NDcyMDQ1LCJleHAiOjE2ODg0NzI0MDV9.fLVGiLOW2KLaBX5buPQOh-q9vLhopRiVa6257JC1s0c
 Host: localhost:8080</code></pre>
 </div>
 </div>
@@ -573,13 +579,48 @@ Cache-Control: no-cache, no-store, max-age=0, must-revalidate
 Pragma: no-cache
 Expires: 0
 X-Frame-Options: SAMEORIGIN
-Content-Length: 87
+Content-Length: 96
 
 {
-  "email" : "email@123.com",
-  "nickname" : "haha",
+  "email" : "email@test.com",
+  "nickname" : "도리도스",
   "phoneNumber" : "01012341234"
 }</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_user_닉네임_변경">User 닉네임 변경</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_request_4">Request</h3>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code data-lang="http" class="language-http hljs">PATCH /users/me/nickname HTTP/1.1
+Content-Type: application/json;charset=UTF-8
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJlbWFpbEB0ZXN0LmNvbSIsIlJvbGUiOiJVU0VSIiwiaWF0IjoxNjg4NDcyMDQ1LCJleHAiOjE2ODg0NzI0MDV9.fLVGiLOW2KLaBX5buPQOh-q9vLhopRiVa6257JC1s0c
+Content-Length: 33
+Host: localhost:8080
+
+{
+  "nickname" : "도리도도"
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_response_4">Response</h3>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code data-lang="http" class="language-http hljs">HTTP/1.1 204 No Content
+X-Content-Type-Options: nosniff
+X-XSS-Protection: 1; mode=block
+Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+Pragma: no-cache
+Expires: 0
+X-Frame-Options: SAMEORIGIN</code></pre>
 </div>
 </div>
 </div>
@@ -589,7 +630,7 @@ Content-Length: 87
 <div id="footer">
 <div id="footer-text">
 Version 0.0.1-SNAPSHOT<br>
-Last updated 2023-07-03 19:49:22 +0900
+Last updated 2023-07-04 20:59:06 +0900
 </div>
 </div>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/styles/github.min.css">

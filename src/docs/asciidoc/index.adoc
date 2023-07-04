@@ -35,3 +35,13 @@ include::{snippets}/getUserInfo/http-request.adoc[]
 
 include::{snippets}/getUserInfo/http-response.adoc[]
 
+== User 닉네임 변경
+
+=== Request
+
+include::{snippets}/updateUserNickname/http-request.adoc[]
+
+=== Response
+
+include::{snippets}/updateUserNickname/http-response.adoc[]
+
