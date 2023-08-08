@@ -6,7 +6,9 @@ import kr.doridos.dosticket.domain.category.repository.CategoryRepository;
 import kr.doridos.dosticket.domain.place.entity.Place;
 import kr.doridos.dosticket.domain.place.repository.PlaceRepository;
 import kr.doridos.dosticket.domain.ticket.dto.TicketCreateRequest;
+import kr.doridos.dosticket.domain.ticket.dto.TicketUpdateRequest;
 import kr.doridos.dosticket.domain.ticket.entity.Ticket;
+import kr.doridos.dosticket.domain.ticket.exception.ForbiddenException;
 import kr.doridos.dosticket.domain.ticket.exception.OpenDateNotCorrectException;
 import kr.doridos.dosticket.domain.ticket.exception.PlaceNotFoundException;
 import kr.doridos.dosticket.domain.ticket.exception.UserNotTicketManagerException;
@@ -25,8 +27,7 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.BDDMockito.then;
+import static org.mockito.BDDMockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class TicketManagerServiceTest {
@@ -45,9 +46,11 @@ class TicketManagerServiceTest {
 
     User user = getUser();
     User ticketManager = getTicketManager();
+    User secondTicketManager = getSecondTicketManager();
     Category category = getCategory();
     Place place = getPlace();
     TicketCreateRequest ticketCreateRequest = getTicketCreateRequest();
+    TicketUpdateRequest ticketUpdateRequest = getTicketUpdateRequest();
 
     @Test
     @DisplayName("티켓을 성공적으로 생성한다.")
@@ -66,7 +69,7 @@ class TicketManagerServiceTest {
     void createTicket_userNotTicketManager_throwException() {
         assertThatThrownBy(() -> ticketManagerService.createTicket(ticketCreateRequest, user))
                 .isInstanceOf(UserNotTicketManagerException.class)
-                .hasMessage("티켓등록 권한이 없습니다.");
+                .hasMessage("티켓에 대한 권한이 없습니다.");
     }
 
     @Test
@@ -112,12 +115,62 @@ class TicketManagerServiceTest {
                 .hasMessage("예매 시작일은 종료일 이후가 될 수 없습니다.");
     }
 
+    @Test
+    @DisplayName("티켓을 성공적으로 수정한다.")
+    void updateTicket_success() {
+        Ticket ticket = getTicket();
+        given(ticketRepository.findById(1L)).willReturn(Optional.of(ticket));
+
+        ticketManagerService.updateTicket(1L, ticketUpdateRequest, ticketManager);
+
+        then(ticketRepository).should().findById(1L);
+    }
+
+    @Test
+    @DisplayName("티켓 수정시 티켓을 생성한 티켓매니저가 아닌 다른 티켓매니저일 경우 예외가 발생한다.")
+    void updateTicket_notTicketManager_throwException() {
+        Ticket ticket = getTicket();
+        given(ticketRepository.findById(1L)).willReturn(Optional.of(ticket));
+
+        assertThatThrownBy(() -> ticketManagerService.updateTicket(1L, ticketUpdateRequest, secondTicketManager))
+                .isInstanceOf(ForbiddenException.class)
+                .hasMessage("권한이 없는 유저입니다.");
+
+        then(ticketRepository).should().findById(1L);
+    }
+
+    @Test
+    @DisplayName("티켓 수정시 예약시작시간과 예약마감시간이 유효하지 않으면 예외가 발생한다.")
+    void updateTicket_notCorrectDate_throwException() {
+        Ticket ticket = getTicket();
+        given(ticketRepository.findById(1L)).willReturn(Optional.of(ticket));
+
+        TicketUpdateRequest ticketUpdateRequest = TicketUpdateRequest.builder()
+                .title("호차르트")
+                .content("호차르트 최고의 연주")
+                .runningTime("120분")
+                .openDate(LocalDateTime.of(2023, 7, 22, 12, 0))
+                .endDate(LocalDateTime.of(2023, 7, 21, 12, 0))
+                .startDate(LocalDateTime.of(2023, 7, 23, 13, 0))
+                .build();
+
+        assertThatThrownBy(() -> ticketManagerService.updateTicket(1L, ticketUpdateRequest, ticketManager))
+                .isInstanceOf(OpenDateNotCorrectException.class)
+                .hasMessage("예매 시작일은 종료일 이후가 될 수 없습니다.");
+
+        then(ticketRepository).should().findById(1L);
+    }
+
     private User getTicketManager() {
-        return User.of("email@email", "123456a!", "호호", "12345", UserType.TICKET_MANAGER);
+        return new User(1L,"email@email", "123456a!", "호호", "12345", UserType.TICKET_MANAGER, LocalDateTime.now(), LocalDateTime.now(), null);
+    }
+
+    private User getSecondTicketManager() {
+        return new User(2L,"email@email", "123456a!", "호호", "12345", UserType.TICKET_MANAGER, LocalDateTime.now(), LocalDateTime.now(), null);
     }
 
     private User getUser() {
-        return User.of("email@email", "123456a!", "호호", "12345", UserType.USER);
+        return new User(3L,"email@email", "123456a!", "호호", "12345", UserType.USER, LocalDateTime.now(), LocalDateTime.now(), null);
     }
 
     private Place getPlace() {
@@ -135,8 +188,30 @@ class TicketManagerServiceTest {
                 .runningTime("120분")
                 .openDate(LocalDateTime.of(2023, 7, 22, 12, 0))
                 .endDate(LocalDateTime.of(2023, 7, 23, 12, 0))
-                .startDate(LocalDateTime.of(2023, 7, 23, 13, 0))
+                .startDate(LocalDateTime.of(2023, 7, 23, 12, 0))
                 .placeId(1L)
                 .categoryId(1L).build();
+    }
+
+    private TicketUpdateRequest getTicketUpdateRequest() {
+        return TicketUpdateRequest.builder()
+                .title("호차르트")
+                .content("호차르트 최고의 연주")
+                .runningTime("120분")
+                .openDate(LocalDateTime.of(2023, 7, 22, 12, 0))
+                .endDate(LocalDateTime.of(2023, 7, 23, 12, 0))
+                .startDate(LocalDateTime.of(2023, 7, 23, 13, 0))
+                .build();
+    }
+
+    private Ticket getTicket() {
+        return new Ticket(1L, "모차르트", "모차르트 최고의 연주", "120분",
+                LocalDateTime.of(2023, 7, 22, 12, 0),
+                LocalDateTime.of(2023, 7, 23, 12, 0),
+                LocalDateTime.of(2023, 7, 23, 12, 0),
+                getPlace(),
+                getTicketManager(),
+                getCategory(),
+                LocalDateTime.now(), LocalDateTime.now(), null);
     }
 }
