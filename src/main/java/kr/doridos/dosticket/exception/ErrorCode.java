@@ -19,12 +19,13 @@ public enum ErrorCode {
     HTTP_METHOD_NOT_ALLOWED(405, "G002", "지원하지 않는 HTTP 요청입니다."),
     INTERNAL_SERVER_ERROR(500, "G003", "내부 서버 에러입니다."),
     //Ticket
-    NOT_TICKET_MANAGER(401, "T001", "티켓등록 권한이 없습니다."),
+    NOT_TICKET_MANAGER(401, "T001", "티켓에 대한 권한이 없습니다."),
     CATEGORY_NOT_FOUND(400, "T002", "카테고리가 존재하지 않습니다."),
     SEAT_NOT_FOUND(400,"T003" , "좌석이 존재하지 않습니다."),
     PLACE_NOT_FOUND(400, "T004" , "장소가 존재하지 않습니다."),
-    DATE_NOT_CORRECT(400, "T004", "예매 시작일은 종료일 이후가 될 수 없습니다.");
-
+    DATE_NOT_CORRECT(400, "T005", "예매 시작일은 종료일 이후가 될 수 없습니다."),
+    TICKET_NOT_FOUND(400, "T006", "티켓을 찾을 수 없습니다."),
+    FORBIDDEN_USER(400, "T007" , "권한이 없는 유저입니다.");
 
     private final int status;
     private final String code;
