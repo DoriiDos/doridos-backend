@@ -23,9 +23,10 @@ public enum ErrorCode {
     CATEGORY_NOT_FOUND(400, "T002", "카테고리가 존재하지 않습니다."),
     SEAT_NOT_FOUND(400,"T003" , "좌석이 존재하지 않습니다."),
     PLACE_NOT_FOUND(400, "T004" , "장소가 존재하지 않습니다."),
-    DATE_NOT_CORRECT(400, "T005", "예매 시작일은 종료일 이후가 될 수 없습니다."),
+    DATE_NOT_CORRECT(400, "T005", "시작일은 종료일 이후가 될 수 없습니다."),
     TICKET_NOT_FOUND(400, "T006", "티켓을 찾을 수 없습니다."),
-    FORBIDDEN_USER(400, "T007" , "권한이 없는 유저입니다.");
+    FORBIDDEN_USER(400, "T007" , "권한이 없는 유저입니다."),
+    SCHEDULE_ALREADY_EXIST(400,"S001" , "해당시간에 이미 스케줄이 존재합니다.");
 
     private final int status;
     private final String code;
