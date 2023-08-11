@@ -172,7 +172,7 @@ class TicketManagerControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(ticketCreateRequest)))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.message").value("예매 시작일은 종료일 이후가 될 수 없습니다."));
+                .andExpect(jsonPath("$.message").value("시작일은 종료일 이후가 될 수 없습니다."));
     }
 
     @Test
@@ -215,7 +215,7 @@ class TicketManagerControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(ticketUpdateRequest)))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.message").value("예매 시작일은 종료일 이후가 될 수 없습니다."));
+                .andExpect(jsonPath("$.message").value("시작일은 종료일 이후가 될 수 없습니다."));
     }
 
     @Test
