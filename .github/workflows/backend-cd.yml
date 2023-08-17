@@ -28,8 +28,8 @@ jobs:
       - name: Docker Hub 로그인
         run: docker/login-action@v2
         with:
-          username: %{{ secrets.DOCKERHUB_USERNAME }}
-          password: %{{ secrets.DOCKERHUB_PASSWORD }}
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_PASSWORD }}
 
       - name: Extract metadata (tags, labels) for Docker
         id: meta
@@ -56,8 +56,8 @@ jobs:
         uses: appleboy/ssh-action@v0.1.6
         with:
           host: ${{ secrets.VULTR_HOST }}
-          username: %{{ secrets.VULTR_USERNAME }}
-          password: %{{ secrets.VULTR_PASSWORD }}
+          username: ${{ secrets.VULTR_USERNAME }}
+          password: ${{ secrets.VULTR_PASSWORD }}
           port: ${{ secrets.VULTR_PORT }}
           script: |
             docker stop $(docker ps -a -q)
