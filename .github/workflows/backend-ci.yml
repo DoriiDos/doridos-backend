@@ -37,8 +37,8 @@ jobs:
       - name: Gradlew 권한 설정
         run: chmod +x ./gradlew
 
-      - name: Gradle build 진행
-        run: ./gradlew build
+      - name: 테스트 진행
+        run: ./gradlew test
 
       - name: 테스트 결과를 코멘트 등록
         uses: EnricoMi/publish-unit-test-result-action@v2
