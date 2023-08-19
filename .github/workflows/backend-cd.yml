@@ -6,10 +6,6 @@ on:
       - main
       - develop
 
-  pull_request:
-    branches:
-      - develop
-
 jobs:
   docker-build:
     runs-on: ubuntu-latest
