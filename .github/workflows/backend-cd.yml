@@ -26,7 +26,7 @@ jobs:
         run: ./gradlew bootJar
 
       - name: Docker Hub 로그인
-        run: docker/login-action@v2
+        uses: docker/login-action@v2
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_PASSWORD }}
@@ -42,7 +42,7 @@ jobs:
         with:
           context: .
           file: ./Dockerfile
-          platforms: linux/arm64
+          platforms: linux/amd64
           push: true
           tags: alswns7984/doridos:latest
           labels: ${{ steps.meta.outputs.labels }}
@@ -50,17 +50,21 @@ jobs:
   deploy:
     runs-on: self-hosted
     if: ${{ needs.docker-build.result == 'success' }}
-    needs: [docker-build]
+    needs: [ docker-build ]
     steps:
       - name: vltur 인스턴스 접속
-        uses: appleboy/ssh-action@v0.1.6
+        uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.VULTR_HOST }}
           username: ${{ secrets.VULTR_USERNAME }}
           password: ${{ secrets.VULTR_PASSWORD }}
           port: ${{ secrets.VULTR_PORT }}
+
           script: |
-            docker stop $(docker ps -a -q)
-            docker pull alswns7984/doridos:latest
-            docker run -d -p 8080:8080 --name backend alswns7984/doridos:latest
-            docker image prune -a -f
+            sudo docker pull alswns7984/doridos:latest
+            sudo docker stop backend || true
+            sudo docker run -d -p 8080:8080 \
+            --name backend \
+            alswns7984/doridos:latest
+          
+            sudo docker image prune -f
