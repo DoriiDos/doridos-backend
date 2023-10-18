@@ -1,14 +1,16 @@
 spring:
-  h2:
-    console:
-      enabled: true
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://vultradmin:AVNS_fJeus_xtQdyQHrRPG49@vultr-prod-f93a2497-3318-4c98-80e7-d54cd9ef52ff-vultr-prod-7d10.vultrdb.com:16751/doridos?allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+    username: vultradmin
+    password: AVNS_fJeus_xtQdyQHrRPG49
   jpa:
-    defer-datasource-initialization: true
-    show-sql: true
     properties:
       hibernate:
         format_sql: true
-
+    show-sql: true
+    hibernate:
+      ddl-auto: update
   jwt:
     secret-key: NiOeyFbN1Gqo10bPgUyTFsRMkJpGLXSvGP04eFqj5B30r5TcrtlSXfQ7TndvYjNvfkEKLqILn0j1SmKODO1Yw3JpBBgI3nVPEahqxeY8qbPSFGyzyEVxnl4AQcrnVneI
     expire-length: 360000
