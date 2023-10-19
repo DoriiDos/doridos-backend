@@ -1,9 +1,7 @@
 spring:
-  datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://vultradmin:AVNS_fJeus_xtQdyQHrRPG49@vultr-prod-f93a2497-3318-4c98-80e7-d54cd9ef52ff-vultr-prod-7d10.vultrdb.com:16751/doridos?allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=Asia/Seoul&characterEncoding=UTF-8
-    username: vultradmin
-    password: AVNS_fJeus_xtQdyQHrRPG49
+  h2:
+    console:
+      enabled: true
   jpa:
     properties:
       hibernate:
