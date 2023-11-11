@@ -62,6 +62,14 @@ task copyDocument(type: Copy) {
     into file("src/main/resources/static/docs")
 }
 
+task copyPrivate(type: Copy) {
+    copy {
+        from './submodule'
+        include "*.yml"
+        into 'src/main/resources'
+    }
+}
+
 bootJar {
     dependsOn asciidoctor
     from("${asciidoctor.outputDir}") {
@@ -77,3 +85,5 @@ tasks.named('test') {
     useJUnitPlatform()
     outputs.dir snippetsDir
 }
+
+
