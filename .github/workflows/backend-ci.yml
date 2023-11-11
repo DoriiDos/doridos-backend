@@ -21,9 +21,6 @@ jobs:
     steps:
       - name: checkout source
         uses: actions/checkout@v3
-          with:
-            submodules: true
-            token: ${{ secrets.SUBMODULE_TOKEN }}
 
       - name: JDK 11설정
         uses: actions/setup-java@v3
