@@ -23,13 +23,13 @@ public class User {
     @Column(nullable = false)
     private String email;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private String password;
 
     @Column(nullable = false)
     private String nickname;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private String phoneNumber;
 
     @Enumerated(EnumType.STRING)
@@ -61,9 +61,19 @@ public class User {
         this.phoneNumber = phoneNumber;
     }
 
+    public User(final String email, final String nickname, final UserType userType) {
+        this.email = email;
+        this.nickname = nickname;
+        this.userType = userType;
+    }
+
     public static User of(final String email, final String password, final String nickname,
                           final String phoneNumber, final UserType userType) {
         return new User(email, password, nickname, phoneNumber, userType);
+    }
+
+    public static User ofSocial(final String email, final String nickname) {
+        return new User(email, nickname, UserType.SOCIAL);
     }
 
     public void updateNickname(final String nickname) {

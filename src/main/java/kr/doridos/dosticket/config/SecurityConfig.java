@@ -1,9 +1,12 @@
 package kr.doridos.dosticket.config;
 
+import kr.doridos.dosticket.domain.auth.oauth.OAuth2SuccessHandler;
+import kr.doridos.dosticket.domain.auth.service.CustomOAuth2UserService;
 import kr.doridos.dosticket.domain.auth.support.jwt.CustomAccessDeniedHandler;
 import kr.doridos.dosticket.domain.auth.support.jwt.CustomAuthenticationEntryPoint;
 import kr.doridos.dosticket.domain.auth.support.jwt.JwtFilter;
 import kr.doridos.dosticket.domain.auth.support.jwt.JwtProvider;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -14,13 +17,12 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @Configuration
 @EnableWebSecurity
+@RequiredArgsConstructor
 public class SecurityConfig {
 
     private final JwtProvider jwtProvider;
-
-    public SecurityConfig(final JwtProvider jwtProvider) {
-        this.jwtProvider = jwtProvider;
-    }
+    private final CustomOAuth2UserService customOAuth2UserService;
+    private final OAuth2SuccessHandler oAuth2SuccessHandler;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -38,6 +40,12 @@ public class SecurityConfig {
                 .anyRequest().authenticated()
                 .and()
                 .exceptionHandling().authenticationEntryPoint(new CustomAuthenticationEntryPoint())
+                .and()
+                .oauth2Login()
+                .successHandler(oAuth2SuccessHandler)
+                    .userInfoEndpoint()
+                    .userService(customOAuth2UserService)
+                .and()
 
                 .and()
                 .exceptionHandling().accessDeniedHandler(new CustomAccessDeniedHandler())
