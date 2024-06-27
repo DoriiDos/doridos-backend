@@ -3,13 +3,12 @@ package kr.doridos.dosticket.domain.auth.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import kr.doridos.dosticket.domain.auth.dto.SignInRequest;
 import kr.doridos.dosticket.domain.auth.service.AuthService;
-import kr.doridos.dosticket.domain.user.UserType;
+import kr.doridos.dosticket.domain.user.User;
 import kr.doridos.dosticket.domain.user.dto.UserSignUpRequest;
 import kr.doridos.dosticket.domain.user.service.UserService;
+import kr.doridos.dosticket.domain.user.util.UserFixture;
 import kr.doridos.dosticket.exception.ErrorCode;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -25,14 +24,13 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@AutoConfigureRestDocs
-@AutoConfigureMockMvc
 @Transactional
+@DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
+@SuppressWarnings("NonAsciiCharacters")
+@AutoConfigureMockMvc
+@AutoConfigureRestDocs
 @SpringBootTest
 class AuthControllerTest {
-
-    public static final String EMAIL = "email@email.com";
-    public static final String PASSWORD = "123456a!";
 
     @Autowired
     private MockMvc mockMvc;
@@ -48,30 +46,35 @@ class AuthControllerTest {
 
     @BeforeEach
     void saveUser() {
-        UserSignUpRequest userSignUpRequest = new UserSignUpRequest(EMAIL, PASSWORD, "도리도스","01012341234", UserType.USER);
+        User user = UserFixture.일반_유저_생성();
+
+        UserSignUpRequest userSignUpRequest = new UserSignUpRequest(
+                user.getEmail(),
+                user.getPassword(),
+                user.getNickname(),
+                user.getPhoneNumber(),
+                user.getUserType());
         userService.signUp(userSignUpRequest);
     }
 
     @Test
-    @DisplayName("로그인에 성공한다.")
-    public void user_signIn_success() throws Exception {
-        SignInRequest signInRequest = new SignInRequest(EMAIL, PASSWORD);
+    void 로그인에_성공한다() throws Exception {
+        SignInRequest signInRequest = new SignInRequest("test@test.com", "12345678a!");
 
         mockMvc.perform(post("/auth/signin")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(signInRequest)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("token", notNullValue()))
-                .andDo(document("userSignIn",
+                .andDo(document("유저 로그인 성공",
                         preprocessRequest(prettyPrint()),
                         preprocessResponse(prettyPrint())
                 ));
     }
 
     @Test
-    @DisplayName("이메일이 일치하지 않으면 로그인에 실패한다.")
-    public void userNotExistsEmail_signIn_throw401() throws Exception {
-        SignInRequest signInRequest = new SignInRequest("emjai1@email.com", PASSWORD);
+    void 이메일이_다르면_로그인에_실패한다401() throws Exception {
+        SignInRequest signInRequest = new SignInRequest("test1@test.com", "12345678a!");
 
         mockMvc.perform(post("/auth/signin")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -81,9 +84,8 @@ class AuthControllerTest {
     }
 
     @Test
-    @DisplayName("패스워드가 일치하지 않으면 로그인에 실패한다.")
-    public void userNotMatchPassword_signIn_throw401() throws Exception {
-        SignInRequest signInRequest = new SignInRequest("emjai1@email.com", PASSWORD);
+    void 패스워드가_일치하지_않으면_로그인에_실패한다401() throws Exception {
+        SignInRequest signInRequest = new SignInRequest("test@test.com", "12345678aa!");
 
         mockMvc.perform(post("/auth/signin")
                         .contentType(MediaType.APPLICATION_JSON)

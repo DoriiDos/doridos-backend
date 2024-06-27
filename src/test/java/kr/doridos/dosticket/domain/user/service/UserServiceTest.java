@@ -8,20 +8,21 @@ import kr.doridos.dosticket.domain.user.dto.UserSignUpRequest;
 import kr.doridos.dosticket.domain.user.exception.NicknameAlreadyExistsException;
 import kr.doridos.dosticket.domain.user.exception.UserAlreadySignUpException;
 import kr.doridos.dosticket.domain.user.repository.UserRepository;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import kr.doridos.dosticket.domain.user.util.UserFixture;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.time.LocalDateTime;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.assertj.core.api.SoftAssertions.assertSoftly;
 import static org.mockito.BDDMockito.*;
 
+@DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
+@SuppressWarnings("NonAsciiCharacters")
 @ExtendWith(MockitoExtension.class)
 class UserServiceTest {
 
@@ -31,73 +32,107 @@ class UserServiceTest {
     @Mock
     private UserRepository userRepository;
 
-    @Test
-    @DisplayName("회원가입에 성공한다.")
-    void signUp_success() {
-        final UserSignUpRequest userSignUpRequest = new UserSignUpRequest("aaa@test.com", "123456a!", "두루리루", "01012345432", UserType.USER);
-        User user = new User(1L, "aaa@test.com", "123456a!", "두루리루", "01012345432", UserType.USER, LocalDateTime.now(), LocalDateTime.now(), null);
+    @DisplayName("회원가입을 진행한다")
+    @Nested
+    class Signup {
+        @Test
+        void 회원가입에_성공한다() {
+            UserSignUpRequest userSignUpRequest = new UserSignUpRequest("test@test.com",
+                    "12345678a!",
+                    "test",
+                    "01012341234",
+                    UserType.USER);
+            User user = UserFixture.일반_유저_생성();
 
-        given(userRepository.save(any(User.class))).willReturn(user);
+            given(userRepository.save(any(User.class))).willReturn(user);
 
-        long userId = userService.signUp(userSignUpRequest);
+            long userId = userService.signUp(userSignUpRequest);
 
-        assertThat(userId).isEqualTo(1L);
-        then(userRepository).should().save(any(User.class));
+            assertThat(userId).isEqualTo(1L);
+            then(userRepository).should().save(any(User.class));
+        }
+
+        @Test
+        void 이미_존재하는_닉네임이면_예외가_발생한다() {
+            //given
+            User user = UserFixture.일반_유저_생성();
+            UserSignUpRequest userSignUpRequest = new UserSignUpRequest("test1@test.com",
+                    "12345678a!",
+                    user.getNickname(),
+                    "01012341234",
+                    UserType.USER);
+
+            given(userRepository.existsByNickname(user.getNickname())).willReturn(true);
+
+            assertThatThrownBy(() -> userService.signUp(userSignUpRequest))
+                    .isInstanceOf(NicknameAlreadyExistsException.class)
+                    .hasMessage("이미 존재하는 닉네임입니다.");
+
+            verify(userRepository, never()).save(any(User.class));
+        }
+
+        @Test
+        void 이미_존재하는_이메일이면_예외가_발생한다() {
+            //given
+            User user = UserFixture.일반_유저_생성();
+            UserSignUpRequest userSignUpRequest = new UserSignUpRequest(user.getEmail(),
+                    "12345678a!",
+                    "하루하루",
+                    "01012341234",
+                    UserType.USER);
+
+            given(userRepository.existsByEmail(user.getEmail())).willReturn(true);
+
+            assertThatThrownBy(() -> userService.signUp(userSignUpRequest))
+                    .isInstanceOf(UserAlreadySignUpException.class)
+                    .hasMessage("이미 가입한 유저입니다.");
+
+            verify(userRepository, never()).save(any(User.class));
+        }
     }
 
-    @Test
-    @DisplayName("회원가입시 이미 존재하는 닉네임으로 가입을 시도하면 예외가 발생한다.")
-    void signUp_duplicatedNickname_throwException() {
-        final String nickname = "도리도스";
-        final UserSignUpRequest userSignUpRequest = new UserSignUpRequest("aaa@test.com", "1234567!", nickname, "01012345432", UserType.USER);
+    @DisplayName("유저 정보를 조회 및 변경한다")
+    @Nested
+    class UserInfo {
 
-        given(userRepository.existsByNickname(nickname)).willReturn(true);
+        @Test
+        void 유저정보_조회에_성공한다() {
+            //given
+            User user = UserFixture.일반_유저_생성();
+            //when
+            UserInfoResponse userInfoResponse = userService.getUserInfo(user);
+            //then
+            assertSoftly(softly -> {
+                softly.assertThat(userInfoResponse.getEmail()).isEqualTo(user.getEmail());
+                softly.assertThat(userInfoResponse.getNickname()).isEqualTo(user.getNickname());
+                softly.assertThat(userInfoResponse.getPhoneNumber()).isEqualTo(user.getPhoneNumber());
+            });
+        }
 
-        assertThatThrownBy(() -> userService.signUp(userSignUpRequest))
-                .isInstanceOf(NicknameAlreadyExistsException.class);
+        @Test
+        void 변경하려는_닉네임이_같으면_예외를_발생한다() {
+            //given
+            NicknameRequest nicknameRequest = new NicknameRequest("test");
+            User user = UserFixture.일반_유저_생성();
 
-        then(userRepository).should().existsByNickname(nickname);
-    }
+            given(userRepository.findByEmail(user.getEmail())).willReturn(Optional.of(user));
+            //when, then
+            assertThatThrownBy(() -> userService.updateNickname(nicknameRequest, user.getEmail()))
+                    .isInstanceOf(NicknameAlreadyExistsException.class)
+                    .hasMessage("이미 존재하는 닉네임입니다.");
+        }
 
-    @Test
-    @DisplayName("회원가입시 이미 가입된 이메일로 가입을 시도하면 예외가 발생한다.")
-    void signUp_duplicatedEmail_throwException() {
-        final String email = "example@test.com";
-        final UserSignUpRequest userSignUpRequest = new UserSignUpRequest(email, "1234567a!", "두리두스", "01012345432", UserType.USER);
+        @Test
+        void 닉네임_변경에_성공한다() {
+            NicknameRequest nicknameRequest = new NicknameRequest("test1");
+            User user = UserFixture.일반_유저_생성();
 
-        given(userRepository.existsByEmail(email)).willReturn(true);
+            given(userRepository.findByEmail(user.getEmail())).willReturn(Optional.of(user));
+            userService.updateNickname(nicknameRequest, user.getEmail());
 
-        assertThatThrownBy(() -> userService.signUp(userSignUpRequest))
-                .isInstanceOf(UserAlreadySignUpException.class);
-
-        then(userRepository).should().existsByEmail(email);
-    }
-
-    @Test
-    @DisplayName("유저의 정보 조회에 성공한다.")
-    void user_getInfo_success() {
-       //given
-        User user = new User("email@email.com","hahaha", "01012341234");
-        //when
-        UserInfoResponse userInfoResponse = userService.getUserInfo(user);
-        //then
-        assertAll(
-                () -> assertThat(userInfoResponse.getEmail()).isEqualTo(user.getEmail()),
-                () -> assertThat(userInfoResponse.getNickname()).isEqualTo(user.getNickname()),
-                () -> assertThat(userInfoResponse.getPhoneNumber()).isEqualTo(user.getPhoneNumber()));
-    }
-
-    @Test
-    @DisplayName("기존 닉네임과 변경하려는 닉네임이 같을 때 예외가 발생한다")
-    void user_updateNickname_throwException() {
-        //given
-        NicknameRequest nicknameRequest = new NicknameRequest("hahahoho");
-        User user = new User("email@email.com", "hahahoho", "01012341234");
-
-        given(userRepository.findByEmail(user.getEmail())).willReturn(Optional.of(user));
-        //when, then
-        assertThatThrownBy(() -> userService.updateNickname(nicknameRequest, user.getEmail()))
-                .isInstanceOf(NicknameAlreadyExistsException.class)
-                .hasMessage("이미 존재하는 닉네임입니다.");
+            assertThat(user.getNickname()).isEqualTo(nicknameRequest.getNickname());
+        }
     }
 }
+
+
