@@ -8,9 +8,8 @@ import kr.doridos.dosticket.domain.user.EncodedPassword;
 import kr.doridos.dosticket.domain.user.User;
 import kr.doridos.dosticket.domain.user.UserType;
 import kr.doridos.dosticket.domain.user.repository.UserRepository;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import kr.doridos.dosticket.domain.user.util.UserFixture;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -24,7 +23,8 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.*;
 
-
+@DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
+@SuppressWarnings("NonAsciiCharacters")
 @ExtendWith(MockitoExtension.class)
 class AuthServiceTest {
 
@@ -41,16 +41,20 @@ class AuthServiceTest {
 
     @BeforeEach
     public void setUp() {
-        signInRequest = new SignInRequest("email@email.com", "123456a!");
+        signInRequest = new SignInRequest("test@test.com", "12345678a!");
     }
 
     @Test
-    @DisplayName("패스워드와 이메일이 모두 일치하면 성공적으로 토큰을 발급한다.")
-    void validUserSignInRequest_signIn_ReturnSignInResponse() {
-        User user = new User(1L, "aaa@test.com", EncodedPassword.encode("123456a!"), "두루리루", "01012345432", UserType.USER, LocalDateTime.now(), LocalDateTime.now(), null);
+    void 입력정보가_일치하면_토큰을_발급한다() {
+        User user = new User(1L,
+                "test@test.com",
+                EncodedPassword.encode("12345678a!"),
+                "두루리루", "01012345432",
+                UserType.USER, LocalDateTime.now(), LocalDateTime.now(),
+                null);
 
         given(userRepository.findByEmail(signInRequest.getEmail())).willReturn(Optional.of(user));
-        given(jwtProvider.createAccessToken("email@email.com", UserType.USER)).willReturn("accessToken");
+        given(jwtProvider.createAccessToken("test@test.com", UserType.USER)).willReturn("accessToken");
 
         SignInResponse signInResponse = authService.signIn(signInRequest);
 
@@ -58,25 +62,22 @@ class AuthServiceTest {
     }
 
     @Test
-    @DisplayName("가입된 이메일이 존재하지 않아 exception 발생한다.")
-    void notExistUserEmail_signIn_throwSignInFailureException() {
+    void 가입된_유저가_아니면_예외를_발생한다() {
         given(userRepository.findByEmail(anyString())).willReturn(Optional.empty());
 
         assertThatThrownBy(() -> authService.signIn(signInRequest))
                 .isInstanceOf(SignInFailureException.class)
                 .hasMessage("로그인에 실패하였습니다.");
-
-        then(userRepository).should().findByEmail(any());
     }
 
     @Test
-    @DisplayName("패스워드가 일치하지 않으면 exception 발생한다.")
-    void notExistUserPassword_signIn_throwSignInFailureException() {
-        User user = new User(1L, "aaa@test.com", EncodedPassword.encode("123456a!1"), "두루리루", "01012345432", UserType.USER, LocalDateTime.now(), LocalDateTime.now(), null);
+    void 패스워드가_일치하지_않으면_예외가_발생한다() {
+        User user = UserFixture.일반_유저_생성();
+        SignInRequest request = new SignInRequest("test@test.com", "123456a!");
 
-        given(userRepository.findByEmail(signInRequest.getEmail())).willReturn(Optional.of(user));
+        given(userRepository.findByEmail(request.getEmail())).willReturn(Optional.of(user));
 
-        assertThatThrownBy(() -> authService.signIn(signInRequest))
+        assertThatThrownBy(() -> authService.signIn(request))
                 .isInstanceOf(SignInFailureException.class)
                 .hasMessage("로그인에 실패하였습니다.");
     }

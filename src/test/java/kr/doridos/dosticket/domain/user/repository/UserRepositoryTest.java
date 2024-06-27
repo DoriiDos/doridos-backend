@@ -2,8 +2,7 @@ package kr.doridos.dosticket.domain.user.repository;
 
 import kr.doridos.dosticket.config.JpaAuditingConfig;
 import kr.doridos.dosticket.domain.user.User;
-import kr.doridos.dosticket.domain.user.UserType;
-
+import kr.doridos.dosticket.domain.user.util.UserFixture;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -20,32 +19,21 @@ class UserRepositoryTest {
     @Autowired
     UserRepository userRepository;
 
-    private String setUpEmail;
-    private String setUpNickname;
+    private User user;
 
     @BeforeEach
     void setup() {
-        setUpEmail = "example22@test.com";
-        String password = "123456!a";
-        setUpNickname = "도리도스";
-        String phoneNumber = "01012345678";
-
-        userRepository.save(User.of(setUpEmail, password, setUpNickname, phoneNumber, UserType.USER));
+        user = UserFixture.일반_유저_생성();
+        userRepository.save(user);
     }
 
     @DisplayName("회원 정보를 저장한다.")
     @Test
     void user_signup() {
         //given
-        String email = "example@test.com";
-        String password = "123456!a";
-        String nickname = "hahaha";
-        String phoneNumber = "01012345678";
-
+        User createUser = UserFixture.일반_유저_생성();
         //when
-        User savedUser = userRepository.save(
-                User.of(email, password, nickname, phoneNumber, UserType.USER));
-
+        User savedUser = userRepository.save(createUser);
         //then
         User user = userRepository.getReferenceById(savedUser.getId());
         assertThat(user).isSameAs(savedUser);
@@ -54,14 +42,14 @@ class UserRepositoryTest {
     @Test
     @DisplayName("사용자 이메일이 존재하는지 확인한다.")
     void existsUserByEmail() {
-        final boolean existEmail = userRepository.existsByEmail(setUpEmail);
+        boolean existEmail = userRepository.existsByEmail(user.getEmail());
         assertThat(existEmail).isTrue();
     }
 
     @Test
     @DisplayName("사용자 닉네임이 존재하는지 확인한다.")
     void existsUserByNickname() {
-        final boolean existNickname = userRepository.existsByNickname(setUpNickname);
+        boolean existNickname = userRepository.existsByNickname(user.getNickname());
         assertThat(existNickname).isTrue();
     }
 }

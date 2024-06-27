@@ -3,14 +3,13 @@ package kr.doridos.dosticket.domain.user.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import kr.doridos.dosticket.domain.auth.dto.SignInRequest;
 import kr.doridos.dosticket.domain.auth.service.AuthService;
+import kr.doridos.dosticket.domain.user.User;
 import kr.doridos.dosticket.domain.user.UserType;
 import kr.doridos.dosticket.domain.user.dto.NicknameRequest;
 import kr.doridos.dosticket.domain.user.dto.UserSignUpRequest;
 import kr.doridos.dosticket.domain.user.service.UserService;
-import kr.doridos.dosticket.exception.ErrorCode;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import kr.doridos.dosticket.domain.user.util.UserFixture;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -26,17 +25,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @Transactional
+@DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
+@SuppressWarnings("NonAsciiCharacters")
 @AutoConfigureMockMvc
 @AutoConfigureRestDocs
 @SpringBootTest
 class UserControllerTest {
-
-    private static final String EMAIL = "email@test.com";
-    private static final String PASSWORD = "123456a!";
-    private static final String NICK_NAME = "도리도스";
-    private static final String PHONE_NUMBER = "01012341234";
-    private static final UserType USER_TYPE = UserType.USER;
-    private String token;
 
     @Autowired
     private MockMvc mockMvc;
@@ -50,63 +44,69 @@ class UserControllerTest {
     @Autowired
     AuthService authService;
 
+    private String token;
+
     @BeforeEach
     void setUp() {
-        final UserSignUpRequest userSignUpRequest = new UserSignUpRequest(EMAIL, PASSWORD, NICK_NAME, PHONE_NUMBER, USER_TYPE);
+        User user = UserFixture.일반_유저_생성();
+        UserSignUpRequest userSignUpRequest = new UserSignUpRequest(user.getEmail(),
+                user.getPassword(),
+                user.getNickname(),
+                user.getPhoneNumber(),
+                user.getUserType());
         userService.signUp(userSignUpRequest);
 
-        final SignInRequest signInRequest = new SignInRequest(EMAIL, PASSWORD);
+        SignInRequest signInRequest = new SignInRequest(user.getEmail(), user.getPassword());
         token = authService.signIn(signInRequest).getToken();
     }
 
     @Test
-    @DisplayName("회원가입에 성공한다.")
-    void signUp_success() throws Exception {
-        final UserSignUpRequest userSignUpRequest = new UserSignUpRequest("test@email.com", PASSWORD, "도도도도", PHONE_NUMBER, USER_TYPE);
+    void 회원가입에_성공한다() throws Exception {
+        final UserSignUpRequest userSignUpRequest = new UserSignUpRequest("test1@email.com",
+                "12345678a!",
+                "하루하루",
+                "01012341234",
+                UserType.USER);
 
         mockMvc.perform(post("/users/signup")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(userSignUpRequest)))
                 .andExpect(status().isCreated())
-                .andDo(document("userSignUp",
+                .andDo(document("유저 회원가입",
                         preprocessRequest(prettyPrint()),
                         preprocessResponse(prettyPrint())
                 ));
     }
 
     @Test
-    @DisplayName("유저 정보조회에 성공한다")
-    void success_getUserInfo() throws Exception {
-
+    void 유저정보_조회에_성공한다() throws Exception {
         mockMvc.perform(get("/users/me")
                         .header("Authorization", "Bearer " + token))
                 .andExpect(status().isOk())
-                .andDo(document("getUserInfo",
+                .andDo(document("유저 정보조회",
                         preprocessRequest(prettyPrint()),
                         preprocessResponse(prettyPrint())
                 ));
     }
 
     @Test
-    @DisplayName("유저 닉네임 변경에 성공한다.")
-    void success_updateUserNickname() throws Exception {
-        NicknameRequest nicknameRequest = new NicknameRequest("도리도도");
+    void 닉네임_변경에_성공한다() throws Exception {
+        NicknameRequest nicknameRequest = new NicknameRequest("도리도스");
 
         mockMvc.perform(patch("/users/me/nickname")
                         .header("Authorization", "Bearer " + token)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(nicknameRequest)))
                 .andExpect(status().isNoContent())
-                .andDo(document("updateUserNickname",
+                .andDo(document("닉네임 변경",
                         preprocessRequest(prettyPrint()),
                         preprocessResponse(prettyPrint())
                 ));
     }
 
     @Test
-    @DisplayName("기존 닉네임과 동일한 닉네임으로 변경 요청시 에러가 발생한다.")
-    void updateUserNickname_sameNickname_throwException409() throws Exception {
-        NicknameRequest nicknameRequest = new NicknameRequest("도리도스");
+    void 닉네임이_존재하면_예외를_반환한다() throws Exception {
+        NicknameRequest nicknameRequest = new NicknameRequest("test");
 
         mockMvc.perform(patch("/users/me/nickname")
                         .header("Authorization", "Bearer " + token)
