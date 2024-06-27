@@ -9,6 +9,6 @@ public class UserAlreadySignUpException extends BusinessException {
     }
 
     public UserAlreadySignUpException(ErrorCode errorCode) {
-        super(ErrorCode.NICKNAME_ALREADY_EXISTS);
+        super(ErrorCode.USER_ALREADY_SIGNUP);
     }
 }
