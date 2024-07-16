@@ -8,7 +8,7 @@ import kr.doridos.dosticket.domain.user.EncodedPassword;
 import kr.doridos.dosticket.domain.user.User;
 import kr.doridos.dosticket.domain.user.UserType;
 import kr.doridos.dosticket.domain.user.repository.UserRepository;
-import kr.doridos.dosticket.domain.user.util.UserFixture;
+import kr.doridos.dosticket.domain.user.fixture.UserFixture;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

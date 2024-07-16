@@ -6,7 +6,7 @@ import kr.doridos.dosticket.domain.auth.service.AuthService;
 import kr.doridos.dosticket.domain.user.User;
 import kr.doridos.dosticket.domain.user.dto.UserSignUpRequest;
 import kr.doridos.dosticket.domain.user.service.UserService;
-import kr.doridos.dosticket.domain.user.util.UserFixture;
+import kr.doridos.dosticket.domain.user.fixture.UserFixture;
 import kr.doridos.dosticket.exception.ErrorCode;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;

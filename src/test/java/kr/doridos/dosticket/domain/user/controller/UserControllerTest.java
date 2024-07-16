@@ -8,7 +8,7 @@ import kr.doridos.dosticket.domain.user.UserType;
 import kr.doridos.dosticket.domain.user.dto.NicknameRequest;
 import kr.doridos.dosticket.domain.user.dto.UserSignUpRequest;
 import kr.doridos.dosticket.domain.user.service.UserService;
-import kr.doridos.dosticket.domain.user.util.UserFixture;
+import kr.doridos.dosticket.domain.user.fixture.UserFixture;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
