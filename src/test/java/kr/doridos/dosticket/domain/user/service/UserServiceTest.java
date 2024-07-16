@@ -8,7 +8,7 @@ import kr.doridos.dosticket.domain.user.dto.UserSignUpRequest;
 import kr.doridos.dosticket.domain.user.exception.NicknameAlreadyExistsException;
 import kr.doridos.dosticket.domain.user.exception.UserAlreadySignUpException;
 import kr.doridos.dosticket.domain.user.repository.UserRepository;
-import kr.doridos.dosticket.domain.user.util.UserFixture;
+import kr.doridos.dosticket.domain.user.fixture.UserFixture;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
