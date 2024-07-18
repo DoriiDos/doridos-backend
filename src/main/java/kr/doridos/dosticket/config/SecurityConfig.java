@@ -34,6 +34,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests()
                     .antMatchers("/users/signup").permitAll()
                     .antMatchers("/actuator/**").permitAll()
+                    .antMatchers("/tickets/**").permitAll()
                     .antMatchers("/auth/**").permitAll()
                     .antMatchers("/docs/**").permitAll()
                     .antMatchers("/h2-console/**").permitAll()
