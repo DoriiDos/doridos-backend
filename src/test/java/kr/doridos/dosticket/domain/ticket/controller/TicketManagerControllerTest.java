@@ -3,14 +3,11 @@ package kr.doridos.dosticket.domain.ticket.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import kr.doridos.dosticket.domain.auth.dto.SignInRequest;
 import kr.doridos.dosticket.domain.auth.service.AuthService;
-import kr.doridos.dosticket.domain.auth.support.jwt.JwtProvider;
 import kr.doridos.dosticket.domain.ticket.dto.TicketCreateRequest;
 import kr.doridos.dosticket.domain.ticket.dto.TicketUpdateRequest;
 import kr.doridos.dosticket.domain.ticket.fixture.TicketFixture;
 import kr.doridos.dosticket.domain.ticket.service.TicketManagerService;
 import kr.doridos.dosticket.domain.user.User;
-import kr.doridos.dosticket.domain.user.UserType;
-import kr.doridos.dosticket.domain.user.dto.UserSignUpRequest;
 import kr.doridos.dosticket.domain.user.exception.UserNotFoundException;
 import kr.doridos.dosticket.domain.user.fixture.UserFixture;
 import kr.doridos.dosticket.domain.user.repository.UserRepository;
@@ -22,11 +19,11 @@ import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDoc
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.Optional;
 
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
@@ -165,8 +162,7 @@ class TicketManagerControllerTest {
     }
 
     @Test
-    @DisplayName("티켓수정시 예미시작시간과 마감시간이 유효하지 않으면 예외가 발생한다 - 400")
-    public void updateTicket_notCorrectOpenDate_throwException400() throws Exception {
+    void 티켓수정시_예미시작시간과_마감시간이_유효하지_않으면_예외가_발생한다400() throws Exception {
         TicketUpdateRequest ticketUpdateRequest = TicketUpdateRequest.builder()
                 .title("호차르트")
                 .content("호호차차르트")
@@ -185,8 +181,7 @@ class TicketManagerControllerTest {
     }
 
     @Test
-    @DisplayName("티켓수정시 일반유저라면 예외가 발생한다. - 400")
-    public void updateTicket_userNotTicketManager_throwException400() throws Exception {
+    void 티켓수정시_일반유저라면_예외가_발생한다400() throws Exception {
         TicketUpdateRequest ticketUpdateRequest = TicketUpdateRequest.builder()
                 .title("호차르트")
                 .content("호호차차르트")
