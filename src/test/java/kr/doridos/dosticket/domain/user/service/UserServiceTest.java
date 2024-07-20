@@ -48,7 +48,7 @@ class UserServiceTest {
 
             long userId = userService.signUp(userSignUpRequest);
 
-            assertThat(userId).isEqualTo(1L);
+            assertThat(userId).isEqualTo(2L);
             then(userRepository).should().save(any(User.class));
         }
 

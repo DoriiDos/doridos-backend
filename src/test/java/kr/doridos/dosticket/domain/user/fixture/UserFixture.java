@@ -7,7 +7,7 @@ public class UserFixture {
 
     public static User 일반_유저_생성() {
         return User.builder()
-                .id(1L)
+                .id(2L)
                 .email("test@test.com")
                 .password("12345678a!")
                 .nickname("test")
@@ -18,7 +18,7 @@ public class UserFixture {
 
     public static User 관리자_생성() {
         return User.builder()
-                .id(2L)
+                .id(1L)
                 .email("admin@test.com")
                 .password("12345678a!")
                 .nickname("admin")
