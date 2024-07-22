@@ -70,7 +70,7 @@ class TicketManagerServiceTest {
         void 티켓_생성시_티켓매니저가_아니면_생성에_실패한다() {
             assertThatThrownBy(() -> ticketManagerService.createTicket(TicketFixture.티켓_생성_요청(), UserFixture.일반_유저_생성()))
                     .isInstanceOf(UserNotTicketManagerException.class)
-                    .hasMessage("티켓에 대한 권한이 없습니다.");
+                    .hasMessage("권한이 없는 사용자입니다.");
         }
 
         @Test

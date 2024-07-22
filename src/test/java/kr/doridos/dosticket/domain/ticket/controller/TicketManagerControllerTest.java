@@ -99,7 +99,7 @@ class TicketManagerControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(ticketCreateRequest)))
                 .andExpect(status().isUnauthorized())
-                .andExpect(jsonPath("$.message").value("티켓에 대한 권한이 없습니다."))
+                .andExpect(jsonPath("$.message").value("권한이 없는 사용자입니다."))
                 .andDo(document("ticketCreateFail",
                         preprocessRequest(prettyPrint()),
                         preprocessResponse(prettyPrint())
@@ -196,7 +196,7 @@ class TicketManagerControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(ticketUpdateRequest)))
                 .andExpect(status().isUnauthorized())
-                .andExpect(jsonPath("$.message").value("티켓에 대한 권한이 없습니다."));
+                .andExpect(jsonPath("$.message").value("권한이 없는 사용자입니다."));
     }
 
     private Long saveTicket() {
