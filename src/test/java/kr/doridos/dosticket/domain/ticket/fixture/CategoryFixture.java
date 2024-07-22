@@ -7,7 +7,7 @@ public class CategoryFixture {
     public static Category 카테고리_생성() {
         return Category.builder()
                 .id(1L)
-                .name("뮤지컬")
+                .name("스포츠")
                 .build();
     }
 }
