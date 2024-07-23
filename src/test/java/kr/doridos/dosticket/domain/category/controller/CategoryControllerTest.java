@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import kr.doridos.dosticket.domain.auth.dto.SignInRequest;
 import kr.doridos.dosticket.domain.auth.service.AuthService;
 import kr.doridos.dosticket.domain.category.dto.CategoryRequest;
+import kr.doridos.dosticket.domain.category.entity.Category;
 import kr.doridos.dosticket.domain.category.repository.CategoryRepository;
 import kr.doridos.dosticket.domain.ticket.fixture.CategoryFixture;
 import kr.doridos.dosticket.domain.user.fixture.UserFixture;
@@ -21,10 +22,12 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -115,4 +118,19 @@ public class CategoryControllerTest {
                 ));
     }
 
+    @Test
+    void 카테고리_조회에_성공한다200() throws Exception {
+        Category parent = new Category(1L, "뮤지컬", null, new ArrayList<>());
+        Category child = new Category(2L, "오페라", parent, new ArrayList<>());
+        categoryRepository.save(parent);
+        categoryRepository.save(child);
+
+        mockMvc.perform(get("/categories")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andDo(document("카테고리 조회",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint())
+                ));
+    }
 }
