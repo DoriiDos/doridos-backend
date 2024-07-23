@@ -1,12 +1,15 @@
 package kr.doridos.dosticket.domain.category.controller;
 
 import kr.doridos.dosticket.domain.auth.support.jwt.UserDetailsImpl;
+import kr.doridos.dosticket.domain.category.dto.CategoryListResponse;
 import kr.doridos.dosticket.domain.category.dto.CategoryRequest;
 import kr.doridos.dosticket.domain.category.dto.CategoryResponse;
 import kr.doridos.dosticket.domain.category.service.CategoryService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/categories")
@@ -23,5 +26,10 @@ public class CategoryController {
                                                            @RequestBody final CategoryRequest categoryRequest) {
         CategoryResponse response = categoryService.createCategory(userDetails.getUser().getUserType(), categoryRequest);
         return ResponseEntity.ok(response);
+    }
+
+    @GetMapping
+    public ResponseEntity<List<CategoryListResponse>> findAll() {
+        return ResponseEntity.ok(categoryService.findAll());
     }
 }
