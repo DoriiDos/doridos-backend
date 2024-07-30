@@ -2,7 +2,6 @@ package kr.doridos.dosticket.domain.ticket.entity;
 
 import kr.doridos.dosticket.domain.category.entity.Category;
 import kr.doridos.dosticket.domain.place.entity.Place;
-import kr.doridos.dosticket.domain.ticket.dto.TicketCreateRequest;
 import kr.doridos.dosticket.domain.ticket.dto.TicketUpdateRequest;
 import kr.doridos.dosticket.domain.user.User;
 import lombok.*;
