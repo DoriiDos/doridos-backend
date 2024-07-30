@@ -82,4 +82,18 @@ public class TicketControllerTest {
                         preprocessResponse(prettyPrint())
                 ));
     }
+
+    @Test
+    void 카테고리로_티켓_페이징_조회에_성공한다200() throws Exception {
+        Long categoryId = TicketFixture.티켓_생성().getCategory().getId();
+
+        mockMvc.perform(get("/tickets/category/" + categoryId)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(categoryId)))
+                .andExpect(status().isOk())
+                .andDo(document("ticketCategoryPaging",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint())
+                ));
+    }
 }
