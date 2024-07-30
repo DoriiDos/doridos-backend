@@ -1,12 +1,13 @@
 package kr.doridos.dosticket.domain.ticket.service;
 
+import kr.doridos.dosticket.domain.category.entity.Category;
 import kr.doridos.dosticket.domain.ticket.dto.TicketInfoResponse;
 import kr.doridos.dosticket.domain.ticket.dto.TicketPageResponse;
 import kr.doridos.dosticket.domain.ticket.entity.Ticket;
 import kr.doridos.dosticket.domain.ticket.exception.TicketNotFoundException;
+import kr.doridos.dosticket.domain.ticket.fixture.CategoryFixture;
 import kr.doridos.dosticket.domain.ticket.fixture.TicketFixture;
 import kr.doridos.dosticket.domain.ticket.repository.TicketRepository;
-import kr.doridos.dosticket.domain.user.exception.NicknameAlreadyExistsException;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -18,11 +19,12 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 
 @ExtendWith(MockitoExtension.class)
@@ -36,17 +38,22 @@ public class TicketServiceTest {
     @Mock
     private TicketRepository ticketRepository;
 
-    private Ticket ticket;
-    private TicketPageResponse ticketPageResponse;
-    private Page<Ticket> ticketPage;
-    private Page<TicketPageResponse> pageResponse;
+    private List<Ticket> tickets;
+    private Category parentCategory;
+    private Category childCategory;
+    private List<TicketPageResponse> ticketPageResponse;
 
     @BeforeEach
     public void setUp() {
-        ticket = TicketFixture.티켓_생성();
-        ticketPageResponse = TicketPageResponse.convertToDto(ticket);
-        ticketPage = new PageImpl<>(Collections.singletonList(ticket));
-        pageResponse = new PageImpl<>(Collections.singletonList(ticketPageResponse));
+        parentCategory = CategoryFixture.카테고리_생성();
+        childCategory = CategoryFixture.하위_카테고리_생성();
+        tickets = List.of(
+                TicketFixture.티켓_생성(),
+                TicketFixture.티켓_생성2()
+        );
+        ticketPageResponse = tickets.stream()
+                .map(TicketPageResponse::convertToDto)
+                .collect(Collectors.toList());
     }
 
     @DisplayName("티켓을 조회한다")
@@ -74,6 +81,7 @@ public class TicketServiceTest {
 
         @Test
         void 티켓이_존재하지_않으면_예외가_발생한다() {
+            Ticket ticket = TicketFixture.티켓_생성();
             given(ticketRepository.findById(ticket.getId())).willReturn(Optional.empty());
 
             assertThatThrownBy(() -> ticketService.ticketInfo(ticket.getId()))
@@ -83,14 +91,46 @@ public class TicketServiceTest {
 
         @Test
         void 티켓을_페이징_조회한다() {
-            given(ticketRepository.findAll(any(Pageable.class))).willReturn(ticketPage);
-
             Pageable pageable = PageRequest.of(0, 10);
+            Page<Ticket> ticketPage = new PageImpl<>(tickets, pageable, tickets.size());
+
+            given(ticketRepository.findAll(pageable)).willReturn(ticketPage);
             Page<TicketPageResponse> result = ticketService.findAllTickets(pageable);
 
             assertSoftly(softly -> {
-                softly.assertThat(pageResponse.getTotalElements()).isEqualTo(result.getTotalElements());
-                softly.assertThat(pageResponse.getTotalPages()).isEqualTo(result.getTotalPages());
+                softly.assertThat(ticketPage.getTotalElements()).isEqualTo(result.getTotalElements());
+                softly.assertThat(ticketPage.getTotalPages()).isEqualTo(result.getTotalPages());
+            });
+        }
+
+
+        @Test
+        void 부모카테고리로_티켓을_조회한다() {
+            Pageable pageable = PageRequest.of(0, 10);
+            Page<TicketPageResponse> ticketPage = new PageImpl<>(ticketPageResponse, pageable, tickets.size());
+
+            given(ticketRepository.findTicketsByCategoryId(parentCategory.getId(), pageable)).willReturn(ticketPage);
+
+            Page<TicketPageResponse> result = ticketService.findTicketsByCategoryId(parentCategory.getId(), pageable);
+
+            assertSoftly(softly -> {
+                softly.assertThat(result.getTotalElements()).isEqualTo(2);
+                softly.assertThat(result.getContent()).extracting("id").containsExactlyInAnyOrder(tickets.get(0).getId(), tickets.get(1).getId());
+            });
+        }
+
+        @Test
+        void 자식_카테고리로_티켓을_조회한다() {
+            Pageable pageable = PageRequest.of(0, 10);
+            Page<TicketPageResponse> ticketPage = new PageImpl<>(List.of(ticketPageResponse.get(1)), pageable, tickets.size());
+
+            given(ticketRepository.findTicketsByCategoryId(childCategory.getId(), pageable)).willReturn(ticketPage);
+
+            Page<TicketPageResponse> result = ticketService.findTicketsByCategoryId(childCategory.getId(), pageable);
+
+            assertSoftly(softly -> {
+                softly.assertThat(result.getTotalElements()).isEqualTo(1);
+                softly.assertThat(result.getContent().get(0).getId()).isEqualTo(tickets.get(1).getId());
             });
         }
     }

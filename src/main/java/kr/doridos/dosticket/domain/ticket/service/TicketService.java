@@ -11,10 +11,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-
-
 @Service
-@Transactional
 public class TicketService {
 
     private final TicketRepository ticketRepository;
@@ -35,5 +32,10 @@ public class TicketService {
     public Page<TicketPageResponse> findAllTickets(final Pageable pageable) {
         return ticketRepository.findAll(pageable)
                 .map(TicketPageResponse::convertToDto);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<TicketPageResponse> findTicketsByCategoryId (final Long categoryId, final Pageable pageable) {
+        return ticketRepository.findTicketsByCategoryId(categoryId, pageable);
     }
 }

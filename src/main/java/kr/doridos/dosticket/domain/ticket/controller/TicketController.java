@@ -33,4 +33,11 @@ public class TicketController {
             @PageableDefault(size = 10, page = 0) final Pageable pageable) {
         return ResponseEntity.ok(ticketService.findAllTickets(pageable));
     }
+
+    @GetMapping("/category/{categoryId}")
+    public ResponseEntity<Page<TicketPageResponse>> findTicketsByCategoryId (
+            @PathVariable("categoryId") final Long categoryId,
+            @PageableDefault(size = 10, page = 0) final Pageable pageable) {
+        return ResponseEntity.ok(ticketService.findTicketsByCategoryId(categoryId, pageable));
+    }
 }
