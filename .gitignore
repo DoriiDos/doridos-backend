@@ -178,3 +178,6 @@ gradle-app.setting
 ###Git submodule
 src/main/resources/application.yml
 # End of https://www.toptal.com/developers/gitignore/api/java,gradle,intellij+all,macos
+
+##query dsl
+**/generated
