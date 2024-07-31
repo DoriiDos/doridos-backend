@@ -14,6 +14,7 @@ public enum ErrorCode {
     //Auth
     EXPIRED_AUTHORIZATION_TOKEN(400, "A001", "이미 만료된 토큰입니다."),
     INVALID_AUTHORIZATION_TOKEN(404, "A002", "유효하지 않은 토큰입니다."),
+    TOKEN_NOT_FOUND(400, "A003", "토큰이 존재하지 않습니다."),
     //Global
     INPUT_VALUE_INVALID(400, "G001", "유효하지 않은 입력입니다."),
     HTTP_METHOD_NOT_ALLOWED(405, "G002", "지원하지 않는 HTTP 요청입니다."),
