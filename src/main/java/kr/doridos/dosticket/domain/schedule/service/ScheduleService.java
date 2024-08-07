@@ -3,6 +3,7 @@ package kr.doridos.dosticket.domain.schedule.service;
 import kr.doridos.dosticket.domain.place.entity.Seat;
 import kr.doridos.dosticket.domain.place.repository.SeatRepository;
 import kr.doridos.dosticket.domain.schedule.dto.ScheduleCreateRequest;
+import kr.doridos.dosticket.domain.schedule.dto.ScheduleResponse;
 import kr.doridos.dosticket.domain.schedule.entity.Schedule;
 import kr.doridos.dosticket.domain.schedule.entity.ScheduleSeat;
 import kr.doridos.dosticket.domain.schedule.exception.DuplicateScheduleTimeException;
@@ -63,6 +64,15 @@ public class ScheduleService {
         scheduleSeatRepository.saveAll(scheduleSeats);
 
         return schedule.getId();
+    }
+
+    @Transactional(readOnly = true)
+    public List<ScheduleResponse> findAllSchedules(final Long ticketId) {
+        final Ticket ticket = ticketRepository.findById(ticketId)
+                .orElseThrow(() -> { throw new TicketNotFoundException(ErrorCode.TICKET_NOT_FOUND); });
+
+       final List<Schedule> schedules = scheduleRepository.findAllByTicketId(ticketId);
+        return ScheduleResponse.from(schedules);
     }
 
     private void validateDuplicateScheduleTime(LocalDateTime startTime, LocalDateTime endTime, Ticket ticket) {

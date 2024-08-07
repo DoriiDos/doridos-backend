@@ -4,8 +4,10 @@ import kr.doridos.dosticket.domain.category.entity.Category;
 import kr.doridos.dosticket.domain.place.entity.Place;
 import kr.doridos.dosticket.domain.place.repository.SeatRepository;
 import kr.doridos.dosticket.domain.schedule.dto.ScheduleCreateRequest;
+import kr.doridos.dosticket.domain.schedule.dto.ScheduleResponse;
 import kr.doridos.dosticket.domain.schedule.entity.Schedule;
 import kr.doridos.dosticket.domain.schedule.exception.DuplicateScheduleTimeException;
+import kr.doridos.dosticket.domain.schedule.fixture.ScheduleFixture;
 import kr.doridos.dosticket.domain.schedule.repository.ScheduleRepository;
 import kr.doridos.dosticket.domain.schedule.repository.ScheduleSeatRepository;
 import kr.doridos.dosticket.domain.ticket.entity.Ticket;
@@ -23,6 +25,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
@@ -117,6 +121,21 @@ class ScheduleServiceTest {
         assertThatThrownBy(() -> scheduleService.createScheduleWithSeats(notCollectScheduleCreateRequest, ticketManager))
                 .isInstanceOf(OpenDateNotCorrectException.class)
                 .hasMessage("시작일은 종료일 이후가 될 수 없습니다.");
+    }
+
+    @Test
+    @DisplayName("티켓에 해당하는 스케줄을 가져온다.")
+    void findScheduleByTicketId_success() {
+        List<Schedule> schedules = Arrays.asList(ScheduleFixture.스케줄_생성(), ScheduleFixture.스케줄_생성2());
+
+        given(ticketRepository.findById(ticket.getId())).willReturn(Optional.of(ticket));
+        given(scheduleRepository.findAllByTicketId(ticket.getId())).willReturn(schedules);
+
+        List<ScheduleResponse> scheduleResponses = scheduleService.findAllSchedules(ticket.getId());
+
+        assertThat(scheduleResponses.size()).isEqualTo(2);
+        assertThat(scheduleResponses.get(0).getId()).isEqualTo(1L);
+        assertThat(scheduleResponses.get(1).getId()).isEqualTo(2L);
     }
 
     private ScheduleCreateRequest getScheduleCreateRequest() {

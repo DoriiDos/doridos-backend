@@ -2,19 +2,17 @@ package kr.doridos.dosticket.domain.schedule.controller;
 
 import kr.doridos.dosticket.domain.auth.support.jwt.UserDetailsImpl;
 import kr.doridos.dosticket.domain.schedule.dto.ScheduleCreateRequest;
+import kr.doridos.dosticket.domain.schedule.dto.ScheduleResponse;
 import kr.doridos.dosticket.domain.schedule.service.ScheduleService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
+import java.util.List;
 
 @RestController
-@RequestMapping("/schedules")
 public class ScheduleController {
 
     private final ScheduleService scheduleService;
@@ -23,10 +21,16 @@ public class ScheduleController {
         this.scheduleService = scheduleService;
     }
 
-    @PostMapping
+    @PostMapping("/schedules")
     public ResponseEntity<Void> createSchedule(@RequestBody final ScheduleCreateRequest request,
                                                @AuthenticationPrincipal final UserDetailsImpl userDetails) {
         final Long scheduleId = scheduleService.createScheduleWithSeats(request, userDetails.getUser());
         return ResponseEntity.created(URI.create("/schedules" + scheduleId)).build();
+    }
+
+    @GetMapping("tickets/{ticketId}/schedules")
+    public ResponseEntity<List<ScheduleResponse>> findAllSchedules(@PathVariable final Long ticketId) {
+        final List<ScheduleResponse> schedules = scheduleService.findAllSchedules(ticketId);
+        return ResponseEntity.ok(schedules);
     }
 }

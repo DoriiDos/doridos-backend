@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
 
@@ -15,5 +16,7 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
     int getSchedulesNumByStartTime(@Param("startTime") LocalDateTime startTime,
                                    @Param("endTime") LocalDateTime endTime,
                                    @Param("ticket") Ticket ticket);
+
+    List<Schedule> findAllByTicketId(Long ticketId);
 
 }

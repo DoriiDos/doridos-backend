@@ -1,5 +1,6 @@
 package kr.doridos.dosticket.domain.schedule.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import kr.doridos.dosticket.domain.auth.dto.SignInRequest;
 import kr.doridos.dosticket.domain.auth.service.AuthService;
@@ -29,6 +30,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
+
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 
 import java.time.LocalDateTime;
 
@@ -157,6 +160,21 @@ class ScheduleControllerTest {
                         .content(objectMapper.writeValueAsString(scheduleCreateRequest)))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.message").value("해당시간에 이미 스케줄이 존재합니다."));
+    }
+
+    @Test
+    @DisplayName("티켓에 해당하는 스케줄을 가져온다200")
+    public void findAllScheduleByTicketId_success200() throws Exception {
+        saveSchedule();
+
+        mockMvc.perform(get("/tickets/" + ticketId + "/schedules")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(ticketId)))
+                .andExpect(status().isOk())
+                .andDo(document("findAllSchedule",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint())
+                ));
     }
 
     private Long saveTicket() {
