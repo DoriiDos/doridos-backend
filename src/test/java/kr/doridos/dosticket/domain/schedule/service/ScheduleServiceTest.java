@@ -5,9 +5,14 @@ import kr.doridos.dosticket.domain.place.entity.Place;
 import kr.doridos.dosticket.domain.place.repository.SeatRepository;
 import kr.doridos.dosticket.domain.schedule.dto.ScheduleCreateRequest;
 import kr.doridos.dosticket.domain.schedule.dto.ScheduleResponse;
+import kr.doridos.dosticket.domain.schedule.dto.ScheduleSeatResponse;
 import kr.doridos.dosticket.domain.schedule.entity.Schedule;
+import kr.doridos.dosticket.domain.schedule.entity.ScheduleSeat;
 import kr.doridos.dosticket.domain.schedule.exception.DuplicateScheduleTimeException;
+import kr.doridos.dosticket.domain.schedule.exception.ReservationNotStartException;
+import kr.doridos.dosticket.domain.schedule.exception.ScheduleNotFoundException;
 import kr.doridos.dosticket.domain.schedule.fixture.ScheduleFixture;
+import kr.doridos.dosticket.domain.schedule.fixture.ScheduleSeatFixture;
 import kr.doridos.dosticket.domain.schedule.repository.ScheduleRepository;
 import kr.doridos.dosticket.domain.schedule.repository.ScheduleSeatRepository;
 import kr.doridos.dosticket.domain.ticket.entity.Ticket;
@@ -16,7 +21,10 @@ import kr.doridos.dosticket.domain.ticket.exception.TicketNotFoundException;
 import kr.doridos.dosticket.domain.ticket.repository.TicketRepository;
 import kr.doridos.dosticket.domain.user.User;
 import kr.doridos.dosticket.domain.user.UserType;
+import kr.doridos.dosticket.exception.ErrorCode;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.DisplayNameGeneration;
+import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -36,6 +44,8 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 
 @ExtendWith(MockitoExtension.class)
+@DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
+@SuppressWarnings("NonAsciiCharacters")
 class ScheduleServiceTest {
 
     @InjectMocks
@@ -124,8 +134,7 @@ class ScheduleServiceTest {
     }
 
     @Test
-    @DisplayName("티켓에 해당하는 스케줄을 가져온다.")
-    void findScheduleByTicketId_success() {
+    void 티켓에_해당하는_스케줄을_조회한다() {
         List<Schedule> schedules = Arrays.asList(ScheduleFixture.스케줄_생성(), ScheduleFixture.스케줄_생성2());
 
         given(ticketRepository.findById(ticket.getId())).willReturn(Optional.of(ticket));
@@ -136,6 +145,50 @@ class ScheduleServiceTest {
         assertThat(scheduleResponses.size()).isEqualTo(2);
         assertThat(scheduleResponses.get(0).getId()).isEqualTo(1L);
         assertThat(scheduleResponses.get(1).getId()).isEqualTo(2L);
+    }
+
+    @Test
+    void 스케줄_좌석을_조회한다() {
+        Long scheduleId = ScheduleFixture.스케줄_생성().getId();
+        List<ScheduleSeat> scheduleSeats = Arrays.asList(ScheduleSeatFixture.좌석생성(), ScheduleSeatFixture.좌석생성2());
+
+        given(scheduleRepository.findById(scheduleId)).willReturn(Optional.ofNullable(ScheduleFixture.스케줄_생성()));
+        given(scheduleSeatRepository.findAllByScheduleId(scheduleId)).willReturn(scheduleSeats);
+
+        List<ScheduleSeatResponse> scheduleSeatResponses = scheduleService.findAllScheduleSeats(scheduleId);
+
+        assertThat(scheduleSeatResponses.size()).isEqualTo(2);
+    }
+
+    @Test
+    void 티켓_오픈_시작전_좌석을_조회하면_예외가_발생한다() {
+        LocalDateTime now = LocalDateTime.now();
+
+        Ticket ticket = Ticket.builder()
+                .id(1L)
+                .openDate(now.plusDays(1))
+                .build();
+        Schedule schedule = Schedule.builder()
+                .id(1L)
+                .ticket(ticket)
+                .build();
+
+        given(scheduleRepository.findById(schedule.getId())).willReturn(Optional.of(schedule));
+
+        assertThatThrownBy(() -> scheduleService.findAllScheduleSeats(schedule.getId()))
+                .isInstanceOf(ReservationNotStartException.class)
+                .hasMessage(ErrorCode.RESERVATION_NOT_START.getMessage());
+    }
+
+    @Test
+    void 존재하지_않는_스케줄_ID로_조회하면_예외가_발생한다() {
+        Long scheduleId = 99L;
+
+        given(scheduleRepository.findById(scheduleId)).willReturn(Optional.empty());
+
+        assertThatThrownBy(() -> scheduleService.findAllScheduleSeats(scheduleId))
+                .isInstanceOf(ScheduleNotFoundException.class)
+                .hasMessage("스케줄이 존재하지 않습니다.");
     }
 
     private ScheduleCreateRequest getScheduleCreateRequest() {
