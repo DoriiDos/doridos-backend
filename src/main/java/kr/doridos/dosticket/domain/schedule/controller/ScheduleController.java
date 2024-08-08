@@ -3,6 +3,7 @@ package kr.doridos.dosticket.domain.schedule.controller;
 import kr.doridos.dosticket.domain.auth.support.jwt.UserDetailsImpl;
 import kr.doridos.dosticket.domain.schedule.dto.ScheduleCreateRequest;
 import kr.doridos.dosticket.domain.schedule.dto.ScheduleResponse;
+import kr.doridos.dosticket.domain.schedule.dto.ScheduleSeatResponse;
 import kr.doridos.dosticket.domain.schedule.service.ScheduleService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -32,5 +33,12 @@ public class ScheduleController {
     public ResponseEntity<List<ScheduleResponse>> findAllSchedules(@PathVariable final Long ticketId) {
         final List<ScheduleResponse> schedules = scheduleService.findAllSchedules(ticketId);
         return ResponseEntity.ok(schedules);
+    }
+
+    @GetMapping("/tickets/{ticketId}/schedules/{scheduleId}/seats")
+    public ResponseEntity<List<ScheduleSeatResponse>> findAllScheduleSeats(@PathVariable final Long ticketId,
+                                                                           @PathVariable final Long scheduleId) {
+        final List<ScheduleSeatResponse> scheduleSeatResponses = scheduleService.findAllScheduleSeats(scheduleId);
+        return ResponseEntity.ok(scheduleSeatResponses);
     }
 }

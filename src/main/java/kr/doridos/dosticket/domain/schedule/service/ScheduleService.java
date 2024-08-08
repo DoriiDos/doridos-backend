@@ -4,9 +4,12 @@ import kr.doridos.dosticket.domain.place.entity.Seat;
 import kr.doridos.dosticket.domain.place.repository.SeatRepository;
 import kr.doridos.dosticket.domain.schedule.dto.ScheduleCreateRequest;
 import kr.doridos.dosticket.domain.schedule.dto.ScheduleResponse;
+import kr.doridos.dosticket.domain.schedule.dto.ScheduleSeatResponse;
 import kr.doridos.dosticket.domain.schedule.entity.Schedule;
 import kr.doridos.dosticket.domain.schedule.entity.ScheduleSeat;
 import kr.doridos.dosticket.domain.schedule.exception.DuplicateScheduleTimeException;
+import kr.doridos.dosticket.domain.schedule.exception.ReservationNotStartException;
+import kr.doridos.dosticket.domain.schedule.exception.ScheduleNotFoundException;
 import kr.doridos.dosticket.domain.schedule.repository.ScheduleRepository;
 import kr.doridos.dosticket.domain.schedule.repository.ScheduleSeatRepository;
 import kr.doridos.dosticket.domain.ticket.entity.Ticket;
@@ -57,7 +60,6 @@ public class ScheduleService {
             ScheduleSeat scheduleSeat = ScheduleSeat.builder()
                     .isReserved(false)
                     .schedule(schedule)
-                    .seat(seat)
                     .build();
             scheduleSeats.add(scheduleSeat);
         });
@@ -75,6 +77,17 @@ public class ScheduleService {
         return ScheduleResponse.from(schedules);
     }
 
+    @Transactional(readOnly = true)
+    public List<ScheduleSeatResponse> findAllScheduleSeats(final Long scheduleId) {
+        final Schedule schedule = scheduleRepository.findById(scheduleId)
+                .orElseThrow(() -> { throw new ScheduleNotFoundException(ErrorCode.SCHEDULE_NOT_FOUND); });
+
+        validateNowTimeIsNotBeforeStart(LocalDateTime.now(), schedule.getTicket().getOpenDate());
+
+        final List<ScheduleSeat> seats = scheduleSeatRepository.findAllByScheduleId(scheduleId);
+        return ScheduleSeatResponse.from(seats);
+    }
+
     private void validateDuplicateScheduleTime(LocalDateTime startTime, LocalDateTime endTime, Ticket ticket) {
         if(scheduleRepository.getSchedulesNumByStartTime(startTime, endTime, ticket) > 0) {
             throw new DuplicateScheduleTimeException(ErrorCode.SCHEDULE_ALREADY_EXIST);
@@ -90,6 +103,12 @@ public class ScheduleService {
     private void validateEndIsNotBeforeStart(final LocalDateTime startTime, final LocalDateTime endTime) {
         if(endTime.isBefore(startTime)) {
             throw new OpenDateNotCorrectException(ErrorCode.DATE_NOT_CORRECT);
+        }
+    }
+
+    private void validateNowTimeIsNotBeforeStart(final LocalDateTime nowDate, final LocalDateTime openDate) {
+        if(nowDate.isBefore(openDate)) {
+            throw new ReservationNotStartException(ErrorCode.RESERVATION_NOT_START);
         }
     }
 }
