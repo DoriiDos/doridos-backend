@@ -1,35 +1,29 @@
 package kr.doridos.dosticket.domain.schedule.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import kr.doridos.dosticket.domain.auth.dto.SignInRequest;
-import kr.doridos.dosticket.domain.auth.service.AuthService;
+import kr.doridos.dosticket.domain.auth.support.jwt.JwtProvider;
 import kr.doridos.dosticket.domain.schedule.dto.ScheduleCreateRequest;
 import kr.doridos.dosticket.domain.schedule.entity.Schedule;
+import kr.doridos.dosticket.domain.schedule.fixture.ScheduleFixture;
+import kr.doridos.dosticket.domain.schedule.fixture.ScheduleSeatFixture;
 import kr.doridos.dosticket.domain.schedule.repository.ScheduleRepository;
+import kr.doridos.dosticket.domain.schedule.repository.ScheduleSeatRepository;
 import kr.doridos.dosticket.domain.schedule.service.ScheduleService;
-import kr.doridos.dosticket.domain.ticket.dto.TicketCreateRequest;
 import kr.doridos.dosticket.domain.ticket.entity.Ticket;
-import kr.doridos.dosticket.domain.ticket.exception.TicketNotFoundException;
+import kr.doridos.dosticket.domain.ticket.fixture.TicketFixture;
 import kr.doridos.dosticket.domain.ticket.repository.TicketRepository;
 import kr.doridos.dosticket.domain.ticket.service.TicketManagerService;
-import kr.doridos.dosticket.domain.user.User;
 import kr.doridos.dosticket.domain.user.UserType;
-import kr.doridos.dosticket.domain.user.dto.UserSignUpRequest;
-import kr.doridos.dosticket.domain.user.exception.UserNotFoundException;
+import kr.doridos.dosticket.domain.user.fixture.UserFixture;
 import kr.doridos.dosticket.domain.user.repository.UserRepository;
 import kr.doridos.dosticket.domain.user.service.UserService;
-import kr.doridos.dosticket.exception.ErrorCode;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.transaction.annotation.Transactional;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 
@@ -41,9 +35,10 @@ import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+@SuppressWarnings("NonAsciiCharacters")
+@DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 @AutoConfigureRestDocs
 @AutoConfigureMockMvc
-@Transactional
 @SpringBootTest
 class ScheduleControllerTest {
 
@@ -60,46 +55,38 @@ class ScheduleControllerTest {
     private UserRepository userRepository;
 
     @Autowired
-    private UserService userService;
-
-    @Autowired
-    private AuthService authService;
-
-    @Autowired
-    private TicketManagerService ticketManagerService;
-
-    @Autowired
     private ScheduleRepository scheduleRepository;
 
     @Autowired
     private TicketRepository ticketRepository;
 
-    Long ticketManagerId;
-    String ticketManagerToken;
-    Long ticketId;
+    @Autowired
+    private ScheduleSeatRepository scheduleSeatRepository;
+
+    @Autowired
+    private JwtProvider jwtProvider;
+
+    String token;
 
     @BeforeEach
-    void setUpTestData() {
-        UserSignUpRequest ticketManagerSignUpRequest = new UserSignUpRequest("test@email.com", "123456a!", "도리도스", "01012341234", UserType.TICKET_MANAGER);
-        ticketManagerId = userService.signUp(ticketManagerSignUpRequest);
-
-        final SignInRequest signInRequest = new SignInRequest("test@email.com", "123456a!");
-        ticketManagerToken = authService.signIn(signInRequest).getToken();
-
-        ticketId = saveTicket();
+    void setUp() {
+        userRepository.save(UserFixture.관리자_생성());
+        ticketRepository.save(TicketFixture.티켓_생성());
+        scheduleRepository.save(ScheduleFixture.스케줄_생성());
+        scheduleSeatRepository.save(ScheduleSeatFixture.좌석생성());
+        token = jwtProvider.createAccessToken(UserFixture.관리자_생성().getEmail(), UserType.TICKET_MANAGER);
     }
 
     @Test
-    @DisplayName("스케줄 생성에 성공한다 -201")
-    public void createSchedule_success() throws Exception {
+    public void 스케줄_생성에_성공한다201() throws Exception {
         ScheduleCreateRequest scheduleCreateRequest = ScheduleCreateRequest.builder()
-                .ticketId(ticketId)
-                .startTime(LocalDateTime.of(2023, 7, 22, 7, 0))
-                .endTime(LocalDateTime.of(2023, 7, 22, 9, 0))
+                .ticketId(TicketFixture.티켓_생성().getId())
+                .startTime(LocalDateTime.of(2024, 8, 22, 7, 0))
+                .endTime(LocalDateTime.of(2024, 8, 22, 9, 0))
                 .build();
 
         mockMvc.perform(post("/schedules")
-                        .header("Authorization", "Bearer " + ticketManagerToken)
+                        .header("Authorization", "Bearer " + token)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(scheduleCreateRequest)))
                 .andExpect(status().isCreated())
@@ -110,16 +97,15 @@ class ScheduleControllerTest {
     }
 
     @Test
-    @DisplayName("스케줄 생성시 티켓이 존재하지 않으면 예외가 발생한다. -400")
-    public void createSchedule_notExistTicket_throwException400() throws Exception {
+    public void 스케줄_생성시_티켓이_존재하지_않으면_예외가_발생한다400() throws Exception {
         ScheduleCreateRequest scheduleCreateRequest = ScheduleCreateRequest.builder()
                 .ticketId(0L)
-                .startTime(LocalDateTime.of(2023, 7, 22, 7, 0))
-                .endTime(LocalDateTime.of(2023, 7, 22, 9, 0))
+                .startTime(LocalDateTime.of(2024, 8, 22, 7, 0))
+                .endTime(LocalDateTime.of(2024, 8, 22, 9, 0))
                 .build();
 
         mockMvc.perform(post("/schedules")
-                        .header("Authorization", "Bearer " + ticketManagerToken)
+                        .header("Authorization", "Bearer " + token)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(scheduleCreateRequest)))
                 .andExpect(status().isBadRequest())
@@ -127,16 +113,15 @@ class ScheduleControllerTest {
     }
 
     @Test
-    @DisplayName("스케줄 생성시 시작시간과 끝 시간이 유효하지 않으면 예외가 발생한다.-400")
-    public void createSchedule_notCorrectOpenDate_throwException400() throws Exception {
+    public void 스케줄_생성시_시작시간과_끝_시간이_유효하지_않으면_예외가_발생한다400() throws Exception {
         ScheduleCreateRequest scheduleCreateRequest = ScheduleCreateRequest.builder()
-                .ticketId(ticketId)
-                .startTime(LocalDateTime.of(2023, 7, 22, 10, 0))
-                .endTime(LocalDateTime.of(2023, 7, 22, 9, 0))
+                .ticketId(TicketFixture.티켓_생성().getId())
+                .startTime(LocalDateTime.of(2024, 8, 22, 10, 0))
+                .endTime(LocalDateTime.of(2024, 8, 22, 9, 0))
                 .build();
 
         mockMvc.perform(post("/schedules")
-                        .header("Authorization", "Bearer " + ticketManagerToken)
+                        .header("Authorization", "Bearer " + token)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(scheduleCreateRequest)))
                 .andExpect(status().isBadRequest())
@@ -144,18 +129,15 @@ class ScheduleControllerTest {
     }
 
     @Test
-    @DisplayName("스케줄 생성시 겹치는 스케줄 시간이 존재하면 예외가 발생한다.-400")
-    public void createSchedule_duplicatedTime_throwException400() throws Exception {
-        saveSchedule();
-
+    public void 스케줄_생성시_겹치는_스케줄_시간이_존재하면_예외가_발생한다400() throws Exception {
         ScheduleCreateRequest scheduleCreateRequest = ScheduleCreateRequest.builder()
-                .ticketId(ticketId)
-                .startTime(LocalDateTime.of(2023, 7, 26, 12, 0))
-                .endTime(LocalDateTime.of(2023, 7, 26, 13, 0))
+                .ticketId(TicketFixture.티켓_생성().getId())
+                .startTime(ScheduleFixture.스케줄_생성().getStartTime())
+                .endTime(ScheduleFixture.스케줄_생성().getEndTime())
                 .build();
 
         mockMvc.perform(post("/schedules")
-                        .header("Authorization", "Bearer " + ticketManagerToken)
+                        .header("Authorization", "Bearer " + token)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(scheduleCreateRequest)))
                 .andExpect(status().isBadRequest())
@@ -163,9 +145,8 @@ class ScheduleControllerTest {
     }
 
     @Test
-    @DisplayName("티켓에 해당하는 스케줄을 가져온다200")
-    public void findAllScheduleByTicketId_success200() throws Exception {
-        saveSchedule();
+    public void 티켓에_해당하는_스케줄을_조회한다200() throws Exception {
+        Long ticketId = TicketFixture.티켓_생성().getId();
 
         mockMvc.perform(get("/tickets/" + ticketId + "/schedules")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -177,29 +158,37 @@ class ScheduleControllerTest {
                 ));
     }
 
-    private Long saveTicket() {
-        TicketCreateRequest ticketCreateRequest = TicketCreateRequest.builder()
-                .title("고차르트").content("고차르트 최고의 연주").runningTime("120분")
-                .openDate(LocalDateTime.of(2023, 7, 22, 12, 0))
-                .endDate(LocalDateTime.of(2023, 7, 23, 12, 0))
-                .startDate(LocalDateTime.of(2023, 7, 26, 13, 0))
-                .placeId(1L).categoryId(1L).build();
+    @Test
+    public void 스케줄에_해당하는_좌석조회에_성공한다200() throws Exception {
+        Long ticketId = TicketFixture.티켓_생성().getId();
+        Long scheduleId = ScheduleFixture.스케줄_생성().getId();
 
-        User user = userRepository.findById(ticketManagerId)
-                .orElseThrow(() -> {
-                    throw new UserNotFoundException(ErrorCode.USER_NOT_FOUND);
-                });
-
-        return ticketManagerService.createTicket(ticketCreateRequest, user);
+        mockMvc.perform(get("/tickets/{ticketId}/schedules/{scheduleId}/seats", ticketId, scheduleId)
+                        .header("Authorization", "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andDo(document("findAllScheduleSeats",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint())
+                ));
     }
 
-    private void saveSchedule() {
-        Ticket ticket = ticketRepository.findById(ticketId)
-                .orElseThrow(() -> {
-                    throw new TicketNotFoundException(ErrorCode.TICKET_NOT_FOUND);
-                });
-
-        Schedule schedule = new Schedule(LocalDateTime.of(2023, 7, 26, 13, 0), LocalDateTime.of(2023, 7, 26, 14, 0), ticket);
+    @Test
+    public void 스케줄좌석_조회시간이_티켓오픈시간_이전이면_예외가_발생한다400() throws Exception {
+        Ticket ticket = TicketFixture.티켓_생성3();
+        Schedule schedule = ScheduleFixture.스케줄_생성3();
+        ticketRepository.save(ticket);
         scheduleRepository.save(schedule);
+
+        // 스케줄 좌석 조회 요청
+        mockMvc.perform(get("/tickets/{ticketId}/schedules/{scheduleId}/seats", ticket.getId(), schedule.getId())
+                        .header("Authorization", "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").value("예매가 아직 시작되지 않았습니다."))
+                .andDo(document("findAllScheduleSeatsError",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint())
+                ));
     }
 }

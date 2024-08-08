@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 @Entity
 @Table
 @Getter
+@Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
@@ -19,14 +20,10 @@ public class ScheduleSeat {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long Id;
+    private Long id;
 
     @Column(nullable = false)
     private boolean isReserved;
-
-    @ManyToOne
-    @JoinColumn(name = "seat_id")
-    private Seat seat;
 
     @ManyToOne
     @JoinColumn(name = "schedule_id")
@@ -43,7 +40,6 @@ public class ScheduleSeat {
     @Builder
     public ScheduleSeat(final boolean isReserved, final Seat seat, final Schedule schedule) {
         this.isReserved = isReserved;
-        this.seat = seat;
         this.schedule = schedule;
     }
 }
