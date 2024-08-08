@@ -15,6 +15,7 @@ public enum ErrorCode {
     EXPIRED_AUTHORIZATION_TOKEN(400, "A001", "이미 만료된 토큰입니다."),
     INVALID_AUTHORIZATION_TOKEN(404, "A002", "유효하지 않은 토큰입니다."),
     TOKEN_NOT_FOUND(400, "A003", "토큰이 존재하지 않습니다."),
+    FORBIDDEN_USER(400, "T007" , "권한이 없는 유저입니다."),
     //Global
     INPUT_VALUE_INVALID(400, "G001", "유효하지 않은 입력입니다."),
     HTTP_METHOD_NOT_ALLOWED(405, "G002", "지원하지 않는 HTTP 요청입니다."),
@@ -26,9 +27,12 @@ public enum ErrorCode {
     PLACE_NOT_FOUND(400, "T004" , "장소가 존재하지 않습니다."),
     DATE_NOT_CORRECT(400, "T005", "시작일은 종료일 이후가 될 수 없습니다."),
     TICKET_NOT_FOUND(400, "T006", "티켓을 찾을 수 없습니다."),
-    FORBIDDEN_USER(400, "T007" , "권한이 없는 유저입니다."),
+    CATEGORY_EXIST(400, "T008", "카테고리가 이미 존재합니다."),
+
+    //Schedule
     SCHEDULE_ALREADY_EXIST(400,"S001" , "해당시간에 이미 스케줄이 존재합니다."),
-    CATEGORY_EXIST(400, "T008", "카테고리가 이미 존재합니다.");
+    RESERVATION_NOT_START(400,"T009" ,"예매가 아직 시작되지 않았습니다."),
+    SCHEDULE_NOT_FOUND(400, "T010" , "스케줄이 존재하지 않습니다.");
 
     private final int status;
     private final String code;
