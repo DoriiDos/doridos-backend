@@ -35,6 +35,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests()
                     .antMatchers("/users/signup").permitAll()
                     .antMatchers("/actuator/**").permitAll()
+                    .antMatchers("/tickets/{ticketId}/schedules/scheduleId}/**").authenticated()
                     .antMatchers("/tickets/**").permitAll()
                     .antMatchers("/auth/**").permitAll()
                     .antMatchers("/docs/**").permitAll()
