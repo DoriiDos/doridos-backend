@@ -18,6 +18,9 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -131,6 +134,40 @@ public class TicketServiceTest {
             assertSoftly(softly -> {
                 softly.assertThat(result.getTotalElements()).isEqualTo(1);
                 softly.assertThat(result.getContent().get(0).getId()).isEqualTo(tickets.get(1).getId());
+            });
+        }
+
+        @Test
+        void 해당_기간에_존재하는_티켓을_조회한다() {
+            Pageable pageable = PageRequest.of(0, 10);
+            Page<TicketPageResponse> ticketPage = new PageImpl<>(ticketPageResponse, pageable, tickets.size());
+            LocalDate startDate = LocalDate.of(2000, 9, 10);
+            LocalDate endDate = LocalDate.of(2100, 9, 10);
+
+            given(ticketRepository.findTicketsByStartDateBetween(startDate, endDate, pageable)).willReturn(ticketPage);
+
+            Page<TicketPageResponse> result = ticketService.findTicketsByDate(startDate, endDate, pageable);
+
+            assertSoftly(softly -> {
+                softly.assertThat(result.getTotalElements()).isEqualTo(2);
+                softly.assertThat(ticketPage.getTotalPages()).isEqualTo(result.getTotalPages());
+            });
+        }
+
+        @Test
+        void 해당_기간에_존재하는_티켓이_없는경우를_테스트한다() {
+            Pageable pageable = PageRequest.of(0, 10);
+            LocalDate startDate = LocalDate.of(2000, 9, 10);
+            LocalDate endDate = LocalDate.of(2000, 9, 10);
+
+            given(ticketRepository.findTicketsByStartDateBetween(startDate, endDate, pageable)).willReturn(Page.empty(pageable));
+
+            Page<TicketPageResponse> result = ticketService.findTicketsByDate(startDate, endDate, pageable);
+
+            assertSoftly(softly -> {
+                softly.assertThat(result.getTotalElements()).isEqualTo(0);
+                softly.assertThat(result.getTotalPages()).isEqualTo(0);
+                softly.assertThat(result.getContent()).isEmpty();
             });
         }
     }
