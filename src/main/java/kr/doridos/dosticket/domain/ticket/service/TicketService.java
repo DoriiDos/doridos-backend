@@ -11,6 +11,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
 @Service
 public class TicketService {
 
@@ -26,6 +29,11 @@ public class TicketService {
                     throw new TicketNotFoundException(ErrorCode.TICKET_NOT_FOUND);});
 
         return TicketInfoResponse.of(ticket);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<TicketPageResponse> findTicketsByDate(final LocalDate startDate, final LocalDate endDate, final Pageable pageable) {
+        return ticketRepository.findTicketsByStartDateBetween(startDate, endDate, pageable);
     }
 
     @Transactional(readOnly = true)
