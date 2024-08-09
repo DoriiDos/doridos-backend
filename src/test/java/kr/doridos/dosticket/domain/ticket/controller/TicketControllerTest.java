@@ -96,4 +96,18 @@ public class TicketControllerTest {
                         preprocessResponse(prettyPrint())
                 ));
     }
+
+    @Test
+    void 날짜로_티켓_페이징_조회에_성공한다200() throws Exception {
+        String startDate = "startDate=2024-08-20";
+        String endDate = "endDate=2024-08-20";
+
+        mockMvc.perform(get("/tickets/date?" + startDate + "&" + endDate)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andDo(document("ticketDatePaging",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint())
+                ));
+    }
 }

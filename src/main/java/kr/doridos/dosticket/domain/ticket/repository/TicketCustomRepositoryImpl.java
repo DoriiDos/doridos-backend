@@ -6,11 +6,15 @@ import kr.doridos.dosticket.domain.category.entity.QCategory;
 import kr.doridos.dosticket.domain.ticket.dto.QTicketPageResponse;
 import kr.doridos.dosticket.domain.ticket.dto.TicketPageResponse;
 import kr.doridos.dosticket.domain.ticket.entity.QTicket;
+import kr.doridos.dosticket.domain.ticket.entity.Ticket;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.support.PageableExecutionUtils;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 
 public class TicketCustomRepositoryImpl implements TicketCustomRepository {
@@ -54,5 +58,36 @@ public class TicketCustomRepositoryImpl implements TicketCustomRepository {
                 .where(qTicket.category.id.in(categoryIds));
 
         return PageableExecutionUtils.getPage(ticketPageResponse, pageable, countQuery::fetchOne);
+    }
+
+    @Override
+    public Page<TicketPageResponse> findTicketsByStartDateBetween(LocalDate startDate, LocalDate endDate, Pageable pageable) {
+        QTicket qTicket = QTicket.ticket;
+        LocalDateTime startDateTime = startDate.atStartOfDay();
+        LocalDateTime endDateTime = endDate.atTime(LocalTime.MAX);
+
+        List<TicketPageResponse> ticketPageResponses = jpaQueryFactory
+                .select(new QTicketPageResponse(
+                        qTicket.id,
+                        qTicket.title,
+                        qTicket.content,
+                        qTicket.runningTime,
+                        qTicket.openDate,
+                        qTicket.endDate,
+                        qTicket.startDate
+                ))
+                .from(qTicket)
+                .where(qTicket.startDate.between(startDateTime, endDateTime))
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .orderBy(qTicket.startDate.desc())
+                .fetch();
+
+        JPAQuery<Long> countQuery = jpaQueryFactory
+                .select(qTicket.count())
+                .from(qTicket)
+                .where(qTicket.startDate.between(startDateTime, endDateTime));
+
+        return PageableExecutionUtils.getPage(ticketPageResponses, pageable, countQuery::fetchOne);
     }
 }

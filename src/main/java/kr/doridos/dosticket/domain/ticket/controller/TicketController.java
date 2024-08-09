@@ -6,11 +6,12 @@ import kr.doridos.dosticket.domain.ticket.service.TicketService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @RestController
 @RequestMapping("/tickets")
@@ -26,6 +27,13 @@ public class TicketController {
     public ResponseEntity<TicketInfoResponse> ticketInfo(@PathVariable final Long ticketId) {
         final TicketInfoResponse response = ticketService.ticketInfo(ticketId);
         return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/date")
+    public ResponseEntity<Page<TicketPageResponse>> findTicketsByStartDate(@RequestParam("startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) final LocalDate startDate,
+                                                                           @RequestParam("endDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) final LocalDate endDate,
+                                                                           final Pageable pageable) {
+        return ResponseEntity.ok(ticketService.findTicketsByDate(startDate, endDate, pageable));
     }
 
     @GetMapping
