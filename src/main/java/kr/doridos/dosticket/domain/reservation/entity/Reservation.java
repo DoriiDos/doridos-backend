@@ -1,6 +1,6 @@
-package kr.doridos.dosticket.domain.schedule.entity;
+package kr.doridos.dosticket.domain.reservation.entity;
 
-import kr.doridos.dosticket.domain.place.entity.Seat;
+import kr.doridos.dosticket.domain.schedule.entity.ScheduleSeat;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -8,26 +8,34 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
-@Entity
 @Table
-@Getter
+@Entity
 @Builder
+@Getter
+@EntityListeners(AuditingEntityListener.class)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-@EntityListeners(AuditingEntityListener.class)
-public class ScheduleSeat {
+public class Reservation {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(nullable = false)
-    private boolean isReserved;
+    private Long userId;
 
-    @ManyToOne
-    @JoinColumn(name = "schedule_id")
-    private Schedule schedule;
+    @Column(nullable = false)
+    private Long scheduleId;
+
+    @Column(nullable = false)
+    private Long ticketId;
+
+    @OneToMany(fetch = FetchType.LAZY)
+    @JoinColumn(name = "reservation_id")
+    private List<ScheduleSeat> seats = new ArrayList<>();
 
     @CreatedDate
     @Column(updatable = false)
@@ -37,13 +45,4 @@ public class ScheduleSeat {
     @Column(nullable = false)
     private LocalDateTime updateAt;
 
-    @Builder
-    public ScheduleSeat(final boolean isReserved, final Seat seat, final Schedule schedule) {
-        this.isReserved = isReserved;
-        this.schedule = schedule;
-    }
-
-    public void reserveSeatStatus() {
-        this.isReserved = true;
-    }
 }
