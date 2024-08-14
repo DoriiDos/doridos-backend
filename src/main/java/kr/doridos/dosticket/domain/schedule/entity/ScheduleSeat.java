@@ -42,4 +42,8 @@ public class ScheduleSeat {
         this.isReserved = isReserved;
         this.schedule = schedule;
     }
+
+    public void reserveSeatStatus() {
+        this.isReserved = true;
+    }
 }
