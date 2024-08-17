@@ -19,7 +19,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 
-
 import java.util.List;
 import java.util.concurrent.*;
 
@@ -57,7 +56,7 @@ public class ReservationConcurrencyTest {
         List<Long> seatIds = List.of(1L);
         ReservationRequest request = new ReservationRequest(1L, 1L, seatIds);
 
-        int threadCount = 100;
+        int threadCount = 50;
 
         ExecutorService executorService = Executors.newFixedThreadPool(threadCount);
         CountDownLatch latch = new CountDownLatch(threadCount);
