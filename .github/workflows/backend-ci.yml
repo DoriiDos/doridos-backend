@@ -18,6 +18,12 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
+    
+    services:
+      redis:
+        image: redis:latest
+        ports:
+          - 6379:6379
 
     steps:
       - name: checkout source
@@ -28,11 +34,6 @@ jobs:
         with:
           java-version: '11'
           distribution: 'adopt'
-
-      - name: Start Redis
-          uses: supercharge/redis-github-action@1.1.0
-          with:
-            redis-version: 6
 
       - name: Gradle 의존성 캐싱
         uses: actions/cache@v3
