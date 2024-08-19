@@ -1,11 +1,11 @@
 package kr.doridos.dosticket.redis;
 
+import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.containers.GenericContainer;
-import org.testcontainers.junit.jupiter.Testcontainers;
 
-@Testcontainers
+@Configuration
 public class RedisTestContainer {
 
     private static final String REDIS_IMAGE = "redis:7.0.8-alpine";
