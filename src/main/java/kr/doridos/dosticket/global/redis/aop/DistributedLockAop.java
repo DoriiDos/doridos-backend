@@ -39,7 +39,6 @@ public class DistributedLockAop {
             if (!rLock.tryLock(distributedLock.waitTime(), distributedLock.leaseTime(), distributedLock.timeUnit())) {
                 throw new LockFailException(ErrorCode.LOCK_ACQUISITION_FAILED);
             }
-            System.out.println(key);
             return aopForTransaction.proceed(joinPoint);
         } catch (InterruptedException e) {
             throw new LockInterruptedException(ErrorCode.LOCK_INTERRUPTED);
