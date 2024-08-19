@@ -9,13 +9,13 @@ import kr.doridos.dosticket.domain.reservation.repository.ReservationRepository;
 import kr.doridos.dosticket.domain.schedule.entity.ScheduleSeat;
 import kr.doridos.dosticket.domain.schedule.repository.ScheduleSeatRepository;
 import kr.doridos.dosticket.exception.ErrorCode;
+import kr.doridos.dosticket.global.redis.DistributedLock;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+
 
 import java.util.List;
 
 @Service
-@Transactional
 public class ReservationService {
 
     private final ScheduleSeatRepository scheduleSeatRepository;
@@ -26,8 +26,9 @@ public class ReservationService {
         this.reservationRepository = reservationRepository;
     }
 
+    @DistributedLock(key = "#request.seatIds")
     public RegisterReservationResponse registerReservation(final Long userId, final ReservationRequest request) {
-        final List<ScheduleSeat> seats = scheduleSeatRepository.findAllByIdWithLock(request.getSeatIds());
+        final List<ScheduleSeat> seats = scheduleSeatRepository.findAllById(request.getSeatIds());
         validateSeatsSize(request.getSeatIds(), seats);
         validateSeatsIsReserve(seats);
 
