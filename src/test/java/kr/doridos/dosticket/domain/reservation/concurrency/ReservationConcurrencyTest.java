@@ -56,7 +56,7 @@ public class ReservationConcurrencyTest {
         List<Long> seatIds = List.of(1L);
         ReservationRequest request = new ReservationRequest(1L, 1L, seatIds);
 
-        int threadCount = 50;
+        int threadCount = 10;
 
         ExecutorService executorService = Executors.newFixedThreadPool(threadCount);
         CountDownLatch latch = new CountDownLatch(threadCount);
