@@ -4,6 +4,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.containers.wait.strategy.Wait;
 
 @Configuration
 public class RedisTestContainer {
@@ -14,7 +15,9 @@ public class RedisTestContainer {
 
     static {
         REDIS_CONTAINER = new GenericContainer<>(REDIS_IMAGE)
-                .withExposedPorts(REDIS_PORT);
+                .withExposedPorts(REDIS_PORT)
+                .withNetworkMode("host")
+                .waitingFor(Wait.forListeningPort());
         REDIS_CONTAINER.start();
     }
 
