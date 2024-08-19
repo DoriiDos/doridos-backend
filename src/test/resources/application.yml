@@ -1,6 +1,6 @@
 spring:
   redis:
-    host:
+    host: localhost
     port: 6379
   h2:
     console:
