@@ -3,6 +3,8 @@ package kr.doridos.dosticket.domain.reservation.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import kr.doridos.dosticket.domain.auth.support.jwt.JwtProvider;
 import kr.doridos.dosticket.domain.reservation.dto.ReservationRequest;
+import kr.doridos.dosticket.domain.reservation.fixture.ReservationFixture;
+import kr.doridos.dosticket.domain.reservation.repository.ReservationRepository;
 import kr.doridos.dosticket.domain.schedule.fixture.ScheduleFixture;
 import kr.doridos.dosticket.domain.schedule.fixture.ScheduleSeatFixture;
 import kr.doridos.dosticket.domain.schedule.repository.ScheduleRepository;
@@ -29,6 +31,7 @@ import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.docu
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -47,6 +50,9 @@ public class ReservationControllerTest {
 
     @Autowired
     private TicketRepository ticketRepository;
+
+    @Autowired
+    private ReservationRepository reservationRepository;
 
     @Autowired
     private UserRepository userRepository;
@@ -70,6 +76,7 @@ public class ReservationControllerTest {
         scheduleSeatRepository.save(ScheduleSeatFixture.좌석생성());
         token = jwtProvider.createAccessToken(UserFixture.관리자_생성().getEmail(), UserType.TICKET_MANAGER);
         scheduleSeatRepository.save(ScheduleSeatFixture.예약된_좌석생성());
+        reservationRepository.save(ReservationFixture.예매생성());
     }
 
     @Test
@@ -113,6 +120,18 @@ public class ReservationControllerTest {
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.message").value("이미 예약된 좌석입니다."))
+                .andDo(document("Reservation",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint())
+                ));
+    }
+
+    @Test
+    void 유저의_예매내역_조회에_성공한다200() throws Exception {
+        mockMvc.perform(get("/reservations/me")
+                        .header("Authorization", "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
                 .andDo(document("Reservation",
                         preprocessRequest(prettyPrint()),
                         preprocessResponse(prettyPrint())
