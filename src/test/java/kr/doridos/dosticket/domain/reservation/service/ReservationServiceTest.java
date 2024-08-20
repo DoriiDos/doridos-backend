@@ -2,6 +2,7 @@ package kr.doridos.dosticket.domain.reservation.service;
 
 import kr.doridos.dosticket.domain.reservation.dto.RegisterReservationResponse;
 import kr.doridos.dosticket.domain.reservation.dto.ReservationRequest;
+import kr.doridos.dosticket.domain.reservation.dto.ReservationResponse;
 import kr.doridos.dosticket.domain.reservation.exception.SeatAlreadyReservedException;
 import kr.doridos.dosticket.domain.reservation.exception.SeatNotFoundException;
 import kr.doridos.dosticket.domain.reservation.repository.ReservationRepository;
@@ -16,6 +17,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -75,5 +77,18 @@ class ReservationServiceTest {
                 .isInstanceOf(SeatNotFoundException.class)
                 .hasMessage("좌석이 존재하지 않습니다.");
 
+    }
+
+    @Test
+    void 유저의_예매내역을_조회한다() {
+        Long userId = 1L;
+        List<ReservationResponse> reservationResponses = List.of(
+                new ReservationResponse(1L, "Ticket 1", LocalDateTime.now(), LocalDateTime.now().plusHours(2)));
+
+        given(reservationRepository.findReservationsByUserId(userId)).willReturn(reservationResponses);
+
+        List<ReservationResponse> responses = reservationService.findUserReservations(userId);
+
+        assertThat(responses).isEqualTo(reservationResponses);
     }
 }
