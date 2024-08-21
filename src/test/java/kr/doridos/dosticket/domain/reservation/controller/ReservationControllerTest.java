@@ -67,14 +67,17 @@ public class ReservationControllerTest {
     private JwtProvider jwtProvider;
 
     String token;
+    String anotherToken;
 
     @BeforeEach
     void setUp() {
         userRepository.save(UserFixture.관리자_생성());
+        userRepository.save(UserFixture.일반_유저_생성());
         ticketRepository.save(TicketFixture.티켓_생성());
         scheduleRepository.save(ScheduleFixture.스케줄_생성());
         scheduleSeatRepository.save(ScheduleSeatFixture.좌석생성());
         token = jwtProvider.createAccessToken(UserFixture.관리자_생성().getEmail(), UserType.TICKET_MANAGER);
+        anotherToken = jwtProvider.createAccessToken(UserFixture.일반_유저_생성().getEmail(), UserType.USER);
         scheduleSeatRepository.save(ScheduleSeatFixture.예약된_좌석생성());
         reservationRepository.save(ReservationFixture.예매생성());
     }
@@ -133,6 +136,50 @@ public class ReservationControllerTest {
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andDo(document("Reservation",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint())
+                ));
+    }
+
+    @Test
+    void 유저의_예매상세내역_조회에_성공한다200() throws Exception {
+        Long reservationId = 1L;
+
+        mockMvc.perform(get("/reservations/me/{reservationId}", reservationId)
+                        .header("Authorization", "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andDo(document("getReservationInfo",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint())
+                ));
+    }
+
+    @Test
+    void 예매의_소유주가_아니면_예외가_발생한다400() throws Exception {
+        Long reservationId = 1L;
+
+        mockMvc.perform(get("/reservations/me/{reservationId}", reservationId)
+                        .header("Authorization", "Bearer " + anotherToken)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.message").value("해당 예매 내역에 접근할 수 없습니다."))
+                .andDo(document("ReservationNotOwner",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint())
+                ));
+    }
+
+    @Test
+    void 예매가_존재하지_않으면_예외가_발생한다400() throws Exception {
+        Long reservationId = 3L;
+
+        mockMvc.perform(get("/reservations/me/{reservationId}", reservationId)
+                        .header("Authorization", "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").value("예매가 존재하지 않습니다."))
+                .andDo(document("ReservationNotFound",
                         preprocessRequest(prettyPrint()),
                         preprocessResponse(prettyPrint())
                 ));
