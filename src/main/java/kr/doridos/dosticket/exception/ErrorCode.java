@@ -35,7 +35,10 @@ public enum ErrorCode {
     SCHEDULE_NOT_FOUND(400, "T010" , "스케줄이 존재하지 않습니다."),
     SEAT_ALREADY_RESERVED(400,"T111" , "이미 예약된 좌석입니다."),
     LOCK_ACQUISITION_FAILED(400,"L001" ,"LOCK 획득에 실패했습니다."),
-    LOCK_INTERRUPTED(400, "L002" ,"LOCK Interrupted exception" );
+    LOCK_INTERRUPTED(400, "L002" ,"LOCK Interrupted exception" ),
+
+    RESERVATION_NOT_FOUND(400, "R001" , "예매가 존재하지 않습니다."),
+    RESERVATION_NOT_OWNER(401,"R002" , "해당 예매 내역에 접근할 수 없습니다.");
 
     private final int status;
     private final String code;
