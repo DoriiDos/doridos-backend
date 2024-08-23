@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import kr.doridos.dosticket.domain.category.entity.Category;
 import kr.doridos.dosticket.domain.place.entity.Place;
 import kr.doridos.dosticket.domain.ticket.entity.Ticket;
-import kr.doridos.dosticket.domain.user.User;
+import kr.doridos.dosticket.domain.user.entity.User;
 import lombok.*;
 
 import javax.validation.constraints.NotBlank;

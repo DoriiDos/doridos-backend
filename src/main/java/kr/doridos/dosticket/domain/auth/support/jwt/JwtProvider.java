@@ -4,7 +4,7 @@ import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import kr.doridos.dosticket.domain.auth.exception.AuthenticationException;
 import kr.doridos.dosticket.domain.auth.exception.InvalidTokenException;
-import kr.doridos.dosticket.domain.user.UserType;
+import kr.doridos.dosticket.domain.user.entity.UserType;
 import kr.doridos.dosticket.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;

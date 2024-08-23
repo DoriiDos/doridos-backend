@@ -1,6 +1,6 @@
 package kr.doridos.dosticket.domain.user.fixture;
-import kr.doridos.dosticket.domain.user.User;
-import kr.doridos.dosticket.domain.user.UserType;
+import kr.doridos.dosticket.domain.user.entity.User;
+import kr.doridos.dosticket.domain.user.entity.UserType;
 import kr.doridos.dosticket.domain.user.dto.UserSignUpRequest;
 
 public class UserFixture {

@@ -3,7 +3,7 @@ package kr.doridos.dosticket.domain.ticket.entity;
 import kr.doridos.dosticket.domain.category.entity.Category;
 import kr.doridos.dosticket.domain.place.entity.Place;
 import kr.doridos.dosticket.domain.ticket.dto.TicketUpdateRequest;
-import kr.doridos.dosticket.domain.user.User;
+import kr.doridos.dosticket.domain.user.entity.User;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;

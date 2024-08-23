@@ -1,4 +1,4 @@
-package kr.doridos.dosticket.domain.user;
+package kr.doridos.dosticket.domain.user.entity;
 
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;

@@ -1,12 +1,11 @@
 package kr.doridos.dosticket.domain.user.dto;
 
-import kr.doridos.dosticket.domain.user.EncodedPassword;
-import kr.doridos.dosticket.domain.user.User;
-import kr.doridos.dosticket.domain.user.UserType;
+import kr.doridos.dosticket.domain.user.entity.EncodedPassword;
+import kr.doridos.dosticket.domain.user.entity.User;
+import kr.doridos.dosticket.domain.user.entity.UserType;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.Length;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
@@ -25,7 +24,7 @@ public class UserSignUpRequest {
     @NotBlank(message = "password은 빈값일 수 없습니다.")
     private String password;
 
-    @Length(min = 2, max = 8, message = "nickname은 2자 이상 8자 이하로 입력하세요. ")
+    @Length(min = 2, max = 8, message = "nickname은 2자 이상 8자 이하로 입력하세요.")
     @NotBlank(message = "nickname은 빈값일 수 없습니다.")
     private String nickname;
 

@@ -1,6 +1,6 @@
 package kr.doridos.dosticket.domain.auth.support.jwt;
 
-import kr.doridos.dosticket.domain.user.User;
+import kr.doridos.dosticket.domain.user.entity.User;
 import kr.doridos.dosticket.domain.user.exception.UserNotFoundException;
 import kr.doridos.dosticket.domain.user.repository.UserRepository;
 import kr.doridos.dosticket.exception.ErrorCode;

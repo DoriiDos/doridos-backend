@@ -1,6 +1,6 @@
 package kr.doridos.dosticket.domain.user.dto;
 
-import kr.doridos.dosticket.domain.user.User;
+import kr.doridos.dosticket.domain.user.entity.User;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

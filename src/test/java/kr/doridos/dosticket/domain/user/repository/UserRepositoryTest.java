@@ -2,7 +2,7 @@ package kr.doridos.dosticket.domain.user.repository;
 
 import kr.doridos.dosticket.config.JpaAuditingConfig;
 import kr.doridos.dosticket.config.QueryDslConfig;
-import kr.doridos.dosticket.domain.user.User;
+import kr.doridos.dosticket.domain.user.entity.User;
 import kr.doridos.dosticket.domain.user.fixture.UserFixture;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

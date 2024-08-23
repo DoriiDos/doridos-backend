@@ -7,7 +7,7 @@ import kr.doridos.dosticket.domain.ticket.dto.TicketCreateRequest;
 import kr.doridos.dosticket.domain.ticket.dto.TicketUpdateRequest;
 import kr.doridos.dosticket.domain.ticket.fixture.TicketFixture;
 import kr.doridos.dosticket.domain.ticket.service.TicketManagerService;
-import kr.doridos.dosticket.domain.user.User;
+import kr.doridos.dosticket.domain.user.entity.User;
 import kr.doridos.dosticket.domain.user.exception.UserNotFoundException;
 import kr.doridos.dosticket.domain.user.fixture.UserFixture;
 import kr.doridos.dosticket.domain.user.repository.UserRepository;
@@ -19,7 +19,6 @@ import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDoc
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 

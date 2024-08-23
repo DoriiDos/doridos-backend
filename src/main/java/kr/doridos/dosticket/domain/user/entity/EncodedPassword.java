@@ -1,4 +1,4 @@
-package kr.doridos.dosticket.domain.user;
+package kr.doridos.dosticket.domain.user.entity;
 
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
