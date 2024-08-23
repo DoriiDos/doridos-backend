@@ -3,10 +3,12 @@ package kr.doridos.dosticket.domain.user.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import kr.doridos.dosticket.domain.auth.dto.SignInRequest;
 import kr.doridos.dosticket.domain.auth.service.AuthService;
-import kr.doridos.dosticket.domain.user.User;
-import kr.doridos.dosticket.domain.user.UserType;
+import kr.doridos.dosticket.domain.auth.support.jwt.JwtProvider;
+import kr.doridos.dosticket.domain.user.entity.User;
+import kr.doridos.dosticket.domain.user.entity.UserType;
 import kr.doridos.dosticket.domain.user.dto.NicknameRequest;
 import kr.doridos.dosticket.domain.user.dto.UserSignUpRequest;
+import kr.doridos.dosticket.domain.user.repository.UserRepository;
 import kr.doridos.dosticket.domain.user.service.UserService;
 import kr.doridos.dosticket.domain.user.fixture.UserFixture;
 import org.junit.jupiter.api.*;
@@ -44,20 +46,19 @@ class UserControllerTest {
     @Autowired
     AuthService authService;
 
+    @Autowired
+    UserRepository userRepository;
+
+    @Autowired
+    JwtProvider jwtProvider;
+
     private String token;
 
     @BeforeEach
     void setUp() {
         User user = UserFixture.일반_유저_생성();
-        UserSignUpRequest userSignUpRequest = new UserSignUpRequest(user.getEmail(),
-                user.getPassword(),
-                user.getNickname(),
-                user.getPhoneNumber(),
-                user.getUserType());
-        userService.signUp(userSignUpRequest);
-
-        SignInRequest signInRequest = new SignInRequest(user.getEmail(), user.getPassword());
-        token = authService.signIn(signInRequest).getToken();
+        userRepository.save(user);
+        token = jwtProvider.createAccessToken(user.getEmail(), user.getUserType());
     }
 
     @Test
@@ -73,6 +74,44 @@ class UserControllerTest {
                         .content(objectMapper.writeValueAsString(userSignUpRequest)))
                 .andExpect(status().isCreated())
                 .andDo(document("유저 회원가입",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint())
+                ));
+    }
+
+    @Test
+    void 회원가입시_이메일이_중복되면_예외가_발생한다() throws Exception {
+        final UserSignUpRequest userSignUpRequest = new UserSignUpRequest(UserFixture.일반_유저_생성().getEmail(),
+                "12345678a!",
+                "하루하루",
+                "01012341234",
+                UserType.USER);
+
+        mockMvc.perform(post("/users/signup")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(userSignUpRequest)))
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.message").value("이미 가입한 유저입니다."))
+                .andDo(document("유저 회원가입 이메일 중복",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint())
+                ));
+    }
+
+    @Test
+    void 회원가입시_닉네임이_중복되면_예외가_발생한다() throws Exception {
+        final UserSignUpRequest userSignUpRequest = new UserSignUpRequest("test@naver.com",
+                "12345678a!",
+                UserFixture.일반_유저_생성().getNickname(),
+                "01012341234",
+                UserType.USER);
+
+        mockMvc.perform(post("/users/signup")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(userSignUpRequest)))
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.message").value("이미 존재하는 닉네임입니다."))
+                .andDo(document("유저 회원가입 닉네임 중복",
                         preprocessRequest(prettyPrint()),
                         preprocessResponse(prettyPrint())
                 ));
@@ -113,6 +152,10 @@ class UserControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(nicknameRequest)))
                 .andExpect(status().isConflict())
-                .andExpect(jsonPath("$.message").value("이미 존재하는 닉네임입니다."));
+                .andExpect(jsonPath("$.message").value("이미 존재하는 닉네임입니다."))
+                .andDo(document("닉네임 변경",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint())
+                ));
     }
 }
