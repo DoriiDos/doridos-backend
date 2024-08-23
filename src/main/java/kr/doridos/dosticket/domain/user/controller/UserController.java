@@ -25,7 +25,7 @@ public class UserController {
     @PostMapping("/signup")
     public ResponseEntity<Void> signUp(@RequestBody @Valid final UserSignUpRequest userSignUpRequest) {
         final Long id = userService.signUp(userSignUpRequest);
-        return ResponseEntity.created(URI.create("/users/" + id)).build();
+        return ResponseEntity.created(URI.create("/users/me")).build();
     }
 
     @GetMapping("/me")
