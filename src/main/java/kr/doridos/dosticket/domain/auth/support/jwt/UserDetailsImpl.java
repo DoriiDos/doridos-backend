@@ -1,7 +1,7 @@
 package kr.doridos.dosticket.domain.auth.support.jwt;
 
-import kr.doridos.dosticket.domain.user.User;
-import kr.doridos.dosticket.domain.user.UserType;
+import kr.doridos.dosticket.domain.user.entity.User;
+import kr.doridos.dosticket.domain.user.entity.UserType;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;

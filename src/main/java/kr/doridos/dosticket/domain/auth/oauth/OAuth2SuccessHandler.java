@@ -1,7 +1,7 @@
 package kr.doridos.dosticket.domain.auth.oauth;
 
 import kr.doridos.dosticket.domain.auth.support.jwt.JwtProvider;
-import kr.doridos.dosticket.domain.user.User;
+import kr.doridos.dosticket.domain.user.entity.User;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;

@@ -11,7 +11,7 @@ import kr.doridos.dosticket.domain.schedule.repository.ScheduleRepository;
 import kr.doridos.dosticket.domain.schedule.repository.ScheduleSeatRepository;
 import kr.doridos.dosticket.domain.ticket.fixture.TicketFixture;
 import kr.doridos.dosticket.domain.ticket.repository.TicketRepository;
-import kr.doridos.dosticket.domain.user.UserType;
+import kr.doridos.dosticket.domain.user.entity.UserType;
 import kr.doridos.dosticket.domain.user.fixture.UserFixture;
 import kr.doridos.dosticket.domain.user.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;

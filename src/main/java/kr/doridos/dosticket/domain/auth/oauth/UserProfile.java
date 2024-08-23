@@ -1,6 +1,6 @@
 package kr.doridos.dosticket.domain.auth.oauth;
 
-import kr.doridos.dosticket.domain.user.User;
+import kr.doridos.dosticket.domain.user.entity.User;
 import lombok.Getter;
 
 @Getter

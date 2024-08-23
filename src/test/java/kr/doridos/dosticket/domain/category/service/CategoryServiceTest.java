@@ -8,7 +8,7 @@ import kr.doridos.dosticket.domain.category.exception.CategoryAlreadyExistsExcep
 import kr.doridos.dosticket.domain.category.repository.CategoryRepository;
 import kr.doridos.dosticket.domain.ticket.exception.UserNotTicketManagerException;
 import kr.doridos.dosticket.domain.ticket.fixture.CategoryFixture;
-import kr.doridos.dosticket.domain.user.User;
+import kr.doridos.dosticket.domain.user.entity.User;
 import kr.doridos.dosticket.domain.user.fixture.UserFixture;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayNameGeneration;

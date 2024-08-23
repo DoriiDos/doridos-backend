@@ -1,4 +1,4 @@
-package kr.doridos.dosticket.domain.user;
+package kr.doridos.dosticket.domain.user.entity;
 
 public enum UserType {
     TICKET_MANAGER(Authority.TICKET_MANAGER),

@@ -1,9 +1,10 @@
 package kr.doridos.dosticket.domain.user;
 
+import kr.doridos.dosticket.domain.user.entity.EncodedPassword;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import static kr.doridos.dosticket.domain.user.EncodedPassword.encode;
+import static kr.doridos.dosticket.domain.user.entity.EncodedPassword.encode;
 import static org.junit.jupiter.api.Assertions.*;
 
 class EncodedPasswordTest {

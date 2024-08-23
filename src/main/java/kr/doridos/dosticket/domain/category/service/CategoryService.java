@@ -8,7 +8,7 @@ import kr.doridos.dosticket.domain.category.exception.CategoryAlreadyExistsExcep
 import kr.doridos.dosticket.domain.category.exception.CategoryNotFoundException;
 import kr.doridos.dosticket.domain.category.repository.CategoryRepository;
 import kr.doridos.dosticket.domain.ticket.exception.UserNotTicketManagerException;
-import kr.doridos.dosticket.domain.user.UserType;
+import kr.doridos.dosticket.domain.user.entity.UserType;
 import kr.doridos.dosticket.exception.ErrorCode;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
