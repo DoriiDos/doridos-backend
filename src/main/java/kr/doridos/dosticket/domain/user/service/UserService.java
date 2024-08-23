@@ -1,6 +1,6 @@
 package kr.doridos.dosticket.domain.user.service;
 
-import kr.doridos.dosticket.domain.user.User;
+import kr.doridos.dosticket.domain.user.entity.User;
 import kr.doridos.dosticket.domain.user.dto.NicknameRequest;
 import kr.doridos.dosticket.domain.user.dto.UserInfoResponse;
 import kr.doridos.dosticket.domain.user.dto.UserSignUpRequest;
@@ -30,6 +30,7 @@ public class UserService {
         return savedUser.getId();
     }
 
+    @Transactional(readOnly = true)
     public UserInfoResponse getUserInfo(final User user) {
         return UserInfoResponse.of(user);
     }
