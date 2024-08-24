@@ -15,7 +15,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.time.LocalDateTime;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -46,12 +45,11 @@ class AuthServiceTest {
 
     @Test
     void 입력정보가_일치하면_토큰을_발급한다() {
-        User user = new User(1L,
-                "test@test.com",
-                EncodedPassword.encode("12345678a!"),
-                "두루리루", "01012345432",
-                UserType.USER, LocalDateTime.now(), LocalDateTime.now(),
-                null);
+        User user = User.builder().id(1L)
+                .password(EncodedPassword.encode("12345678a!"))
+                .nickname("두루리루").phoneNumber("01012345432")
+                .userType(UserType.USER)
+                .build();
 
         given(userRepository.findByEmail(signInRequest.getEmail())).willReturn(Optional.of(user));
         given(jwtProvider.createAccessToken("test@test.com", UserType.USER)).willReturn("accessToken");
