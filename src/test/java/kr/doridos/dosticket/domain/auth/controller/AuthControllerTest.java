@@ -80,7 +80,11 @@ class AuthControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(signInRequest)))
                 .andExpect(status().is(ErrorCode.SIGN_IN_FAIL.getStatus()))
-                .andExpect(jsonPath("$.message").value("로그인에 실패하였습니다."));
+                .andExpect(jsonPath("$.message").value("로그인에 실패하였습니다."))
+                .andDo(document("유저 로그인 성공",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint())
+                ));
     }
 
     @Test
@@ -91,6 +95,10 @@ class AuthControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(signInRequest)))
                 .andExpect(status().is(ErrorCode.SIGN_IN_FAIL.getStatus()))
-                .andExpect(jsonPath("$.message").value("로그인에 실패하였습니다."));
+                .andExpect(jsonPath("$.message").value("로그인에 실패하였습니다."))
+                .andDo(document("유저 로그인 성공",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint())
+                ));
     }
 }

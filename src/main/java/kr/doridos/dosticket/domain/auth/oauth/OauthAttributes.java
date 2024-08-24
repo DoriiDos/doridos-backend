@@ -1,5 +1,7 @@
 package kr.doridos.dosticket.domain.auth.oauth;
 
+import kr.doridos.dosticket.domain.auth.exception.OAuthNotSupportException;
+
 import java.util.Arrays;
 import java.util.Map;
 import java.util.UUID;
@@ -32,7 +34,7 @@ public enum OauthAttributes {
         return Arrays.stream(values())
                 .filter(provider -> registrationId.equals(provider.registrationId))
                 .findFirst()
-                .orElseThrow(IllegalArgumentException::new)
+                .orElseThrow(OAuthNotSupportException::new)
                 .userProfileFactory.apply(attributes);
     }
 }
