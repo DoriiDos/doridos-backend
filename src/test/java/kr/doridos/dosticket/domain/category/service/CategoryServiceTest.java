@@ -23,7 +23,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 import static org.mockito.BDDMockito.given;
@@ -77,7 +76,6 @@ class CategoryServiceTest {
         assertThatThrownBy(() -> categoryService.createCategory(user.getUserType(), request))
                 .isInstanceOf(UserNotTicketManagerException.class)
                 .hasMessage("권한이 없는 사용자입니다.");
-
     }
 
     @Test
@@ -92,9 +90,9 @@ class CategoryServiceTest {
 
     @Test
     void 카테고리를_조회에_성공한다() {
-        given(categoryRepository.findAll()).willReturn(categories);
+        given(categoryRepository.findAllCategories()).willReturn(categories);
 
-        List<CategoryListResponse> response = categoryService.findAll();
+        List<CategoryListResponse> response = categoryService.findAllCategories();
 
         CategoryListResponse parent = response.stream()
                 .filter(cat -> cat.getId().equals(1L))
