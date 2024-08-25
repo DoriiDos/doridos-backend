@@ -80,7 +80,7 @@ public class CategoryControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
-                .andDo(document("createCategory",
+                .andDo(document("카테고리 생성",
                         preprocessRequest(prettyPrint()),
                         preprocessResponse(prettyPrint())
                 ));
@@ -96,7 +96,7 @@ public class CategoryControllerTest {
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isUnauthorized())
                 .andExpect(jsonPath("$.message").value("권한이 없는 사용자입니다."))
-                .andDo(document("Unauthorized 카테고리 생성",
+                .andDo(document("권한 없는 사용자 카테고리 생성",
                         preprocessRequest(prettyPrint()),
                         preprocessResponse(prettyPrint())
                 ));
@@ -112,7 +112,7 @@ public class CategoryControllerTest {
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.message").value("카테고리가 이미 존재합니다."))
-                .andDo(document("카테고리네임 중복",
+                .andDo(document("카테고리네임 중복 에러 발생",
                         preprocessRequest(prettyPrint()),
                         preprocessResponse(prettyPrint())
                 ));
@@ -128,7 +128,7 @@ public class CategoryControllerTest {
         mockMvc.perform(get("/categories")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andDo(document("카테고리 조회",
+                .andDo(document("카테고리 조회 성공",
                         preprocessRequest(prettyPrint()),
                         preprocessResponse(prettyPrint())
                 ));

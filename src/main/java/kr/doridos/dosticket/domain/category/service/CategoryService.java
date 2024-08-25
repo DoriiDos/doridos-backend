@@ -42,8 +42,8 @@ public class CategoryService {
     }
 
     @Transactional(readOnly = true)
-    public List<CategoryListResponse> findAll() {
-        List<Category> response = categoryRepository.findAll();
+    public List<CategoryListResponse> findAllCategories() {
+        List<Category> response = categoryRepository.findAllCategories();
         return response.stream()
                 .map(CategoryListResponse::of)
                 .collect(Collectors.toList());
