@@ -29,23 +29,13 @@ public class TicketController {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/date")
-    public ResponseEntity<Page<TicketPageResponse>> findTicketsByStartDate(@RequestParam("startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) final LocalDate startDate,
-                                                                           @RequestParam("endDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) final LocalDate endDate,
-                                                                           final Pageable pageable) {
-        return ResponseEntity.ok(ticketService.findTicketsByDate(startDate, endDate, pageable));
-    }
-
     @GetMapping
-    public ResponseEntity<Page<TicketPageResponse>> findAllTicketsWithPaging(
-            @PageableDefault(size = 10, page = 0) final Pageable pageable) {
-        return ResponseEntity.ok(ticketService.findAllTickets(pageable));
-    }
+    public Page<TicketPageResponse> getFilteredTickets(
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) final LocalDate startDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) final LocalDate endDate,
+            @RequestParam(required = false) final Long categoryId,
+            final Pageable pageable) {
 
-    @GetMapping("/category/{categoryId}")
-    public ResponseEntity<Page<TicketPageResponse>> findTicketsByCategoryId (
-            @PathVariable("categoryId") final Long categoryId,
-            @PageableDefault(size = 10, page = 0) final Pageable pageable) {
-        return ResponseEntity.ok(ticketService.findTicketsByCategoryId(categoryId, pageable));
+        return ticketService.getFilteredTickets(startDate, endDate, categoryId, pageable);
     }
 }
