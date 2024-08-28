@@ -87,7 +87,7 @@ public class TicketControllerTest {
     void 카테고리로_티켓_페이징_조회에_성공한다200() throws Exception {
         Long categoryId = TicketFixture.티켓_생성().getCategory().getId();
 
-        mockMvc.perform(get("/tickets/category/" + categoryId)
+        mockMvc.perform(get("/tickets?" + categoryId)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(categoryId)))
                 .andExpect(status().isOk())
@@ -102,7 +102,7 @@ public class TicketControllerTest {
         String startDate = "startDate=2024-08-20";
         String endDate = "endDate=2024-08-20";
 
-        mockMvc.perform(get("/tickets/date?" + startDate + "&" + endDate)
+        mockMvc.perform(get("/tickets?" + startDate + "&" + endDate)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andDo(document("ticketDatePaging",

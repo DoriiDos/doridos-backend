@@ -5,11 +5,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public interface TicketCustomRepository {
 
-    Page<TicketPageResponse> findTicketsByCategoryId(Long categoryId, Pageable pageable);
-
-    Page<TicketPageResponse> findTicketsByStartDateBetween(LocalDate startDate, LocalDate endDate, Pageable pageable);
+    Page<TicketPageResponse> findFilteredTickets(LocalDate startDate, LocalDate endDate, Long categoryId, Pageable pageable);
 
 }

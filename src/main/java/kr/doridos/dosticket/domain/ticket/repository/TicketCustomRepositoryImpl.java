@@ -1,6 +1,7 @@
 package kr.doridos.dosticket.domain.ticket.repository;
 
 import com.querydsl.core.types.Predicate;
+import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import kr.doridos.dosticket.domain.category.entity.QCategory;
@@ -25,28 +26,33 @@ public class TicketCustomRepositoryImpl implements TicketCustomRepository {
     }
 
     @Override
-    public Page<TicketPageResponse> findTicketsByCategoryId(Long categoryId, Pageable pageable) {
-        QCategory category = QCategory.category;
+    public Page<TicketPageResponse> findFilteredTickets(LocalDate startDate, LocalDate endDate, Long categoryId, Pageable pageable) {
         QTicket qTicket = QTicket.ticket;
 
-        List<Long> categoryIds = fetchCategoryIdsByParentId(categoryId, category);
-        List<TicketPageResponse> ticketPageResponse = findTicketPageResponse(qTicket, pageable, qTicket.category.id.in(categoryIds));
+        Predicate condition = createCondition(qTicket, startDate, endDate, categoryId);
 
-        JPAQuery<Long> countQuery = createCountQuery(qTicket, qTicket.category.id.in(categoryIds));
+        List<TicketPageResponse> ticketPageResponse = findTicketPageResponse(qTicket, pageable, condition);
+        JPAQuery<Long> countQuery = createCountQuery(qTicket, condition);
 
         return PageableExecutionUtils.getPage(ticketPageResponse, pageable, countQuery::fetchOne);
     }
 
-    @Override
-    public Page<TicketPageResponse> findTicketsByStartDateBetween(LocalDate startDate, LocalDate endDate, Pageable pageable) {
-        QTicket qTicket = QTicket.ticket;
-        LocalDateTime startDateTime = startDate.atStartOfDay();
-        LocalDateTime endDateTime = endDate.atTime(LocalTime.MAX);
+    private Predicate createCondition(QTicket qTicket, LocalDate startDate, LocalDate endDate, Long categoryId) {
+        BooleanExpression condition = qTicket.isNotNull(); // 초기 조건 설정
+        QCategory qCategory = QCategory.category;
 
-        List<TicketPageResponse> ticketPageResponse = findTicketPageResponse(qTicket, pageable, qTicket.startDate.between(startDateTime, endDateTime));
-        JPAQuery<Long> countQuery = createCountQuery(qTicket, qTicket.startDate.between(startDateTime, endDateTime));
+        if (startDate != null && endDate != null) {
+            LocalDateTime startDateTime = startDate.atStartOfDay();
+            LocalDateTime endDateTime = endDate.atTime(LocalTime.MAX);
+            condition = condition.and(qTicket.startDate.between(startDateTime, endDateTime));
+        }
 
-        return PageableExecutionUtils.getPage(ticketPageResponse, pageable, countQuery::fetchOne);
+        if (categoryId != null) {
+            List<Long> categoryIds = fetchCategoryIdsByParentId(categoryId, qCategory);
+            condition = condition.and(qTicket.category.id.in(categoryIds));
+        }
+
+        return condition;
     }
 
     private List<TicketPageResponse> findTicketPageResponse(QTicket qTicket, Pageable pageable, Predicate condition) {
@@ -83,4 +89,5 @@ public class TicketCustomRepositoryImpl implements TicketCustomRepository {
                 .fetch();
     }
 }
+
 

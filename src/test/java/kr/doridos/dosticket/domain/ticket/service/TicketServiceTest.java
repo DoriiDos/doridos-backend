@@ -19,9 +19,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -95,26 +92,27 @@ public class TicketServiceTest {
         @Test
         void 티켓을_페이징_조회한다() {
             Pageable pageable = PageRequest.of(0, 10);
-            Page<Ticket> ticketPage = new PageImpl<>(tickets, pageable, tickets.size());
+            Page<TicketPageResponse> ticketPage = new PageImpl<>(ticketPageResponse, pageable, tickets.size());
 
-            given(ticketRepository.findAll(pageable)).willReturn(ticketPage);
-            Page<TicketPageResponse> result = ticketService.findAllTickets(pageable);
+            given(ticketRepository.findFilteredTickets(null, null, null, pageable)).willReturn(ticketPage);
+
+            Page<TicketPageResponse> result = ticketService.getFilteredTickets(null, null, null, pageable);
 
             assertSoftly(softly -> {
-                softly.assertThat(ticketPage.getTotalElements()).isEqualTo(result.getTotalElements());
-                softly.assertThat(ticketPage.getTotalPages()).isEqualTo(result.getTotalPages());
+                softly.assertThat(result).isNotNull();
+                softly.assertThat(result.getTotalElements()).isEqualTo(ticketPage.getTotalElements());
+                softly.assertThat(result.getTotalPages()).isEqualTo(ticketPage.getTotalPages());
             });
         }
-
 
         @Test
         void 부모카테고리로_티켓을_조회한다() {
             Pageable pageable = PageRequest.of(0, 10);
             Page<TicketPageResponse> ticketPage = new PageImpl<>(ticketPageResponse, pageable, tickets.size());
 
-            given(ticketRepository.findTicketsByCategoryId(parentCategory.getId(), pageable)).willReturn(ticketPage);
+            given(ticketRepository.findFilteredTickets(null, null, parentCategory.getId(), pageable)).willReturn(ticketPage);
 
-            Page<TicketPageResponse> result = ticketService.findTicketsByCategoryId(parentCategory.getId(), pageable);
+            Page<TicketPageResponse> result = ticketService.getFilteredTickets(null, null, parentCategory.getId(), pageable);
 
             assertSoftly(softly -> {
                 softly.assertThat(result.getTotalElements()).isEqualTo(2);
@@ -127,9 +125,9 @@ public class TicketServiceTest {
             Pageable pageable = PageRequest.of(0, 10);
             Page<TicketPageResponse> ticketPage = new PageImpl<>(List.of(ticketPageResponse.get(1)), pageable, tickets.size());
 
-            given(ticketRepository.findTicketsByCategoryId(childCategory.getId(), pageable)).willReturn(ticketPage);
+            given(ticketRepository.findFilteredTickets(null, null, childCategory.getId(), pageable)).willReturn(ticketPage);
 
-            Page<TicketPageResponse> result = ticketService.findTicketsByCategoryId(childCategory.getId(), pageable);
+            Page<TicketPageResponse> result = ticketService.getFilteredTickets(null, null, childCategory.getId(), pageable);
 
             assertSoftly(softly -> {
                 softly.assertThat(result.getTotalElements()).isEqualTo(1);
@@ -144,9 +142,9 @@ public class TicketServiceTest {
             LocalDate startDate = LocalDate.of(2000, 9, 10);
             LocalDate endDate = LocalDate.of(2100, 9, 10);
 
-            given(ticketRepository.findTicketsByStartDateBetween(startDate, endDate, pageable)).willReturn(ticketPage);
+            given(ticketRepository.findFilteredTickets(startDate, endDate, null, pageable)).willReturn(ticketPage);
 
-            Page<TicketPageResponse> result = ticketService.findTicketsByDate(startDate, endDate, pageable);
+            Page<TicketPageResponse> result = ticketService.getFilteredTickets(startDate, endDate, null, pageable);
 
             assertSoftly(softly -> {
                 softly.assertThat(result.getTotalElements()).isEqualTo(2);
@@ -160,9 +158,9 @@ public class TicketServiceTest {
             LocalDate startDate = LocalDate.of(2000, 9, 10);
             LocalDate endDate = LocalDate.of(2000, 9, 10);
 
-            given(ticketRepository.findTicketsByStartDateBetween(startDate, endDate, pageable)).willReturn(Page.empty(pageable));
+            given(ticketRepository.findFilteredTickets(startDate, endDate, null, pageable)).willReturn(Page.empty(pageable));
 
-            Page<TicketPageResponse> result = ticketService.findTicketsByDate(startDate, endDate, pageable);
+            Page<TicketPageResponse> result = ticketService.getFilteredTickets(startDate, endDate, null, pageable);
 
             assertSoftly(softly -> {
                 softly.assertThat(result.getTotalElements()).isEqualTo(0);
