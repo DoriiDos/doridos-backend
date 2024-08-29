@@ -1,6 +1,7 @@
 package kr.doridos.dosticket.domain.reservation.fixture;
 
 import kr.doridos.dosticket.domain.reservation.entity.Reservation;
+import kr.doridos.dosticket.domain.reservation.entity.ReservationStatus;
 import kr.doridos.dosticket.domain.schedule.fixture.ScheduleFixture;
 import kr.doridos.dosticket.domain.schedule.fixture.ScheduleSeatFixture;
 
@@ -12,6 +13,7 @@ public class ReservationFixture {
                 .id(1L)
                 .scheduleId(1L)
                 .seats(List.of(ScheduleSeatFixture.좌석생성(), ScheduleSeatFixture.좌석생성2()))
+                .reservationStatus(ReservationStatus.PAYMENT_WAITING)
                 .ticketId(1L)
                 .userId(1L)
                 .build();

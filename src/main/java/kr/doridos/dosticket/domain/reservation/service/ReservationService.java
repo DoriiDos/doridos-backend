@@ -4,6 +4,7 @@ import kr.doridos.dosticket.domain.reservation.dto.RegisterReservationResponse;
 import kr.doridos.dosticket.domain.reservation.dto.ReservationInfoResponse;
 import kr.doridos.dosticket.domain.reservation.dto.ReservationRequest;
 import kr.doridos.dosticket.domain.reservation.dto.ReservationResponse;
+import kr.doridos.dosticket.domain.reservation.entity.ReservationStatus;
 import kr.doridos.dosticket.domain.reservation.exception.ReservationNotCollectUserException;
 import kr.doridos.dosticket.domain.reservation.exception.ReservationNotFoundException;
 import kr.doridos.dosticket.domain.reservation.exception.SeatNotFoundException;
@@ -43,6 +44,7 @@ public class ReservationService {
                 .scheduleId(request.getScheduleId())
                 .ticketId(request.getTicketId())
                 .seats(seats)
+                .reservationStatus(ReservationStatus.PAYMENT_WAITING)
                 .userId(userId)
                 .build();
         reservationRepository.save(reservation);
