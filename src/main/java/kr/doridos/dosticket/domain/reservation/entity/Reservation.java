@@ -33,6 +33,9 @@ public class Reservation {
     @Column(nullable = false)
     private Long ticketId;
 
+    @Enumerated(EnumType.STRING)
+    private ReservationStatus reservationStatus;
+
     @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "reservation_id")
     private List<ScheduleSeat> seats = new ArrayList<>();
