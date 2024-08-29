@@ -130,8 +130,8 @@ class ScheduleControllerTest {
     public void 스케줄_생성시_겹치는_스케줄_시간이_존재하면_예외가_발생한다400() throws Exception {
         ScheduleCreateRequest scheduleCreateRequest = ScheduleCreateRequest.builder()
                 .ticketId(TicketFixture.티켓_생성().getId())
-                .startTime(ScheduleFixture.스케줄_생성().getStartTime())
-                .endTime(ScheduleFixture.스케줄_생성().getEndTime())
+                .startTime(ScheduleFixture.스케줄_생성().getStartDate())
+                .endTime(ScheduleFixture.스케줄_생성().getEndDate())
                 .build();
 
         mockMvc.perform(post("/schedules")

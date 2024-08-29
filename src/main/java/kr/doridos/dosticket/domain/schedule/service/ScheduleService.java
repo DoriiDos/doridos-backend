@@ -24,8 +24,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -49,20 +49,20 @@ public class ScheduleService {
                 .orElseThrow(() -> { throw new TicketNotFoundException(ErrorCode.TICKET_NOT_FOUND); });
 
         validateUserType(user);
-        validateEndIsNotBeforeStart(request.getStartTime(), request.getEndTime());
+        validateEndDateIsNotBeforeStartDate(request.getStartTime(), request.getEndTime());
         validateDuplicateScheduleTime(request.getStartTime(), request.getEndTime(), ticket);
 
         Schedule schedule = scheduleRepository.save(request.toEntity(ticket));
         List<Seat> seats = seatRepository.findByPlaceId(ticket.getPlace().getId());
-        List<ScheduleSeat> scheduleSeats = new ArrayList<>();
 
-        seats.forEach(seat -> {
-            ScheduleSeat scheduleSeat = ScheduleSeat.builder()
-                    .isReserved(false)
-                    .schedule(schedule)
-                    .build();
-            scheduleSeats.add(scheduleSeat);
-        });
+        List<ScheduleSeat> scheduleSeats = seats.stream()
+                .map(seat -> ScheduleSeat.builder()
+                        .section(seat.getSection())
+                        .seatNum(seat.getSeatNum())
+                        .isReserved(false)
+                        .schedule(schedule)
+                        .build())
+                .collect(Collectors.toList());
         scheduleSeatRepository.saveAll(scheduleSeats);
 
         return schedule.getId();
@@ -88,8 +88,8 @@ public class ScheduleService {
         return ScheduleSeatResponse.from(seats);
     }
 
-    private void validateDuplicateScheduleTime(LocalDateTime startTime, LocalDateTime endTime, Ticket ticket) {
-        if(scheduleRepository.getSchedulesNumByStartTime(startTime, endTime, ticket) > 0) {
+    private void validateDuplicateScheduleTime(LocalDateTime startDate, LocalDateTime endDate, Ticket ticket) {
+        if(scheduleRepository.getSchedulesNumByStartTime(startDate, endDate, ticket) > 0) {
             throw new DuplicateScheduleTimeException(ErrorCode.SCHEDULE_ALREADY_EXIST);
         }
     }
@@ -100,8 +100,8 @@ public class ScheduleService {
         }
     }
 
-    private void validateEndIsNotBeforeStart(final LocalDateTime startTime, final LocalDateTime endTime) {
-        if(endTime.isBefore(startTime)) {
+    private void validateEndDateIsNotBeforeStartDate(final LocalDateTime startDate, final LocalDateTime endDate) {
+        if(endDate.isBefore(startDate)) {
             throw new OpenDateNotCorrectException(ErrorCode.DATE_NOT_CORRECT);
         }
     }

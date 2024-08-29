@@ -34,8 +34,8 @@ public class ReservationCustomRepositoryImpl implements ReservationCustomReposit
                 .select(new QReservationResponse(
                         qReservation.id,
                         qTicket.title,
-                        qSchedule.startTime,
-                        qSchedule.endTime
+                        qSchedule.startDate,
+                        qSchedule.endDate
                 ))
                 .from(qReservation)
                 .leftJoin(qTicket).on(qReservation.ticketId.eq(qTicket.id))
@@ -51,7 +51,7 @@ public class ReservationCustomRepositoryImpl implements ReservationCustomReposit
         QReservation qReservation = QReservation.reservation;
 
         List<Long> seatIds = reservation.getSeats().stream()
-                .map(ScheduleSeat::getId)  // ScheduleSeat 객체에서 id를 추출합니다.
+                .map(ScheduleSeat::getId)
                 .collect(Collectors.toList());
 
         Expression<List<Long>> seatIdsExpression = Expressions.constant(seatIds);
@@ -62,8 +62,8 @@ public class ReservationCustomRepositoryImpl implements ReservationCustomReposit
                         qTicket.title,
                         qTicket.content,
                         qTicket.runningTime,
-                        qSchedule.startTime,
-                        qSchedule.endTime,
+                        qSchedule.startDate,
+                        qSchedule.endDate,
                         seatIdsExpression
                 ))
                 .from(qReservation)

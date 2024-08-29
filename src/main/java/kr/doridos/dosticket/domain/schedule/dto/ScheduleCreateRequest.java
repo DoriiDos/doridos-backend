@@ -30,8 +30,8 @@ public class ScheduleCreateRequest {
 
     public Schedule toEntity(final Ticket ticket) {
         return Schedule.builder()
-                .startTime(startTime)
-                .endTime(endTime)
+                .startDate(startTime)
+                .endDate(endTime)
                 .ticket(ticket)
                 .build();
     }

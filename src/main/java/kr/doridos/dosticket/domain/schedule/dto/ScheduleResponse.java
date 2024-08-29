@@ -24,8 +24,8 @@ public class ScheduleResponse {
     public static ScheduleResponse fromEntity(final Schedule schedule) {
         return new ScheduleResponse(
                 schedule.getId(),
-                schedule.getStartTime(),
-                schedule.getEndTime()
+                schedule.getStartDate(),
+                schedule.getEndDate()
         );
     }
 
