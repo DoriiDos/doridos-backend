@@ -25,15 +25,16 @@ public class Schedule {
     private Long id;
 
     @Column(nullable = false)
-    private LocalDateTime startTime;
+    private LocalDateTime startDate;
 
     @Column(nullable = false)
-    private LocalDateTime endTime;
+    private LocalDateTime endDate;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ticket_id")
     private Ticket ticket;
 
+    @Builder.Default
     @OneToMany(mappedBy = "schedule", fetch = FetchType.LAZY)
     private List<ScheduleSeat> scheduleSeats = new ArrayList<>();
 
@@ -45,10 +46,5 @@ public class Schedule {
     @Column(nullable = false)
     private LocalDateTime updateAt;
 
-    @Builder
-    public Schedule(LocalDateTime startTime, LocalDateTime endTime, Ticket ticket) {
-        this.startTime = startTime;
-        this.endTime = endTime;
-        this.ticket = ticket;
-    }
+
 }

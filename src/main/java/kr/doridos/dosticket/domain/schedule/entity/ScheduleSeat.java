@@ -1,6 +1,6 @@
 package kr.doridos.dosticket.domain.schedule.entity;
 
-import kr.doridos.dosticket.domain.place.entity.Seat;
+import kr.doridos.dosticket.domain.place.entity.Section;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -22,6 +22,12 @@ public class ScheduleSeat {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Enumerated(EnumType.STRING)
+    private Section section;
+
+    @Column(nullable = false)
+    private int seatNum;
+
     @Column(nullable = false)
     private boolean isReserved;
 
@@ -36,12 +42,6 @@ public class ScheduleSeat {
     @LastModifiedDate
     @Column(nullable = false)
     private LocalDateTime updateAt;
-
-    @Builder
-    public ScheduleSeat(final boolean isReserved, final Seat seat, final Schedule schedule) {
-        this.isReserved = isReserved;
-        this.schedule = schedule;
-    }
 
     public void reserveSeatStatus() {
         this.isReserved = true;

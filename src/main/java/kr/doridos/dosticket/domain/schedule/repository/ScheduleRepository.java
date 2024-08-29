@@ -11,10 +11,10 @@ import java.util.List;
 
 public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
 
-    @Query("SELECT COUNT(s) FROM Schedule s " + "WHERE s.startTime <= :endTime AND s.endTime >= :startTime " +
+    @Query("SELECT COUNT(s) FROM Schedule s " + "WHERE s.startDate <= :endDate AND s.endDate >= :startDate " +
             "AND s.ticket = :ticket")
-    int getSchedulesNumByStartTime(@Param("startTime") LocalDateTime startTime,
-                                   @Param("endTime") LocalDateTime endTime,
+    int getSchedulesNumByStartTime(@Param("startDate") LocalDateTime startDate,
+                                   @Param("endDate") LocalDateTime endDate,
                                    @Param("ticket") Ticket ticket);
 
     List<Schedule> findAllByTicketId(Long ticketId);
