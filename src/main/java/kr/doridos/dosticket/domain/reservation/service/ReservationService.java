@@ -65,7 +65,7 @@ public class ReservationService {
     }
 
     private void validateReservationOwnerShip(Long reservationUserId, Long userId) {
-        if(!reservationUserId.equals(userId)) {
+        if (!reservationUserId.equals(userId)) {
             throw new ReservationNotCollectUserException(ErrorCode.RESERVATION_NOT_OWNER);
         }
     }
@@ -77,10 +77,8 @@ public class ReservationService {
     }
 
     private void validateSeatsIsReserve(List<ScheduleSeat> seats) {
-        seats.forEach(seat -> {
-            if (seat.isReserved()) {
-                throw new SeatAlreadyReservedException(ErrorCode.SEAT_ALREADY_RESERVED);
-            }
-        });
+        if (seats.stream().anyMatch(ScheduleSeat::isReserved)) {
+            throw new SeatAlreadyReservedException(ErrorCode.SEAT_ALREADY_RESERVED);
+        }
     }
 }
