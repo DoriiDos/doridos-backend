@@ -30,8 +30,9 @@ public class DistributedLockAop {
         MethodSignature signature = (MethodSignature) joinPoint.getSignature();
         Method method = signature.getMethod();
         DistributedLock distributedLock = method.getAnnotation(DistributedLock.class);
+        int[] paramIndexes = distributedLock.paramIndexes();
 
-        String key = REDISSON_LOCK_PREFIX + DistributedLockKeyGenerator.generate(signature.getParameterNames(),
+        String key = REDISSON_LOCK_PREFIX + DistributedLockKeyGenerator.generate(paramIndexes,
                 joinPoint.getArgs(), distributedLock.key());
         RLock rLock = redissonClient.getLock(key);
 

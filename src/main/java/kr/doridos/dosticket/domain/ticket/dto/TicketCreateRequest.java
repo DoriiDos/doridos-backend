@@ -1,13 +1,13 @@
 package kr.doridos.dosticket.domain.ticket.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import jakarta.validation.constraints.NotBlank;
 import kr.doridos.dosticket.domain.category.entity.Category;
 import kr.doridos.dosticket.domain.place.entity.Place;
 import kr.doridos.dosticket.domain.ticket.entity.Ticket;
 import kr.doridos.dosticket.domain.user.entity.User;
 import lombok.*;
 
-import javax.validation.constraints.NotBlank;
 import java.time.LocalDateTime;
 
 @Getter

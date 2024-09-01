@@ -12,6 +12,8 @@ public @interface DistributedLock {
 
     String key();
 
+    int[] paramIndexes() default {};
+
     TimeUnit timeUnit() default TimeUnit.SECONDS;
 
     long waitTime() default 5L;

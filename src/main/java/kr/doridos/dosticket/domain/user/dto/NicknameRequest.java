@@ -1,11 +1,9 @@
 package kr.doridos.dosticket.domain.user.dto;
 
-import lombok.AccessLevel;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.Length;
-
-import javax.validation.constraints.NotBlank;
 
 @Getter
 @NoArgsConstructor

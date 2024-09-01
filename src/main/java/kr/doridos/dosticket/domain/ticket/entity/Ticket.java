@@ -1,5 +1,6 @@
 package kr.doridos.dosticket.domain.ticket.entity;
 
+import jakarta.persistence.*;
 import kr.doridos.dosticket.domain.category.entity.Category;
 import kr.doridos.dosticket.domain.place.entity.Place;
 import kr.doridos.dosticket.domain.ticket.dto.TicketUpdateRequest;
@@ -9,11 +10,10 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "ticket")
+@Table
 @Getter
 @Builder
 @EntityListeners(AuditingEntityListener.class)

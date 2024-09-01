@@ -1,5 +1,6 @@
 package kr.doridos.dosticket.domain.user.controller;
 
+import jakarta.validation.Valid;
 import kr.doridos.dosticket.domain.auth.support.jwt.UserDetailsImpl;
 import kr.doridos.dosticket.domain.user.dto.NicknameRequest;
 import kr.doridos.dosticket.domain.user.dto.UserInfoResponse;
@@ -9,7 +10,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
 import java.net.URI;
 
 @RestController

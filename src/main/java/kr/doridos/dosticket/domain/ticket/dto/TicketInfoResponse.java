@@ -2,6 +2,7 @@ package kr.doridos.dosticket.domain.ticket.dto;
 
 import kr.doridos.dosticket.domain.ticket.entity.Ticket;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 

@@ -30,14 +30,14 @@ public class ScheduleController {
     }
 
     @GetMapping("tickets/{ticketId}/schedules")
-    public ResponseEntity<List<ScheduleResponse>> findAllSchedules(@PathVariable final Long ticketId) {
+    public ResponseEntity<List<ScheduleResponse>> findAllSchedules(@PathVariable("ticketId") final Long ticketId) {
         final List<ScheduleResponse> schedules = scheduleService.findAllSchedules(ticketId);
         return ResponseEntity.ok(schedules);
     }
 
     @GetMapping("/tickets/{ticketId}/schedules/{scheduleId}/seats")
-    public ResponseEntity<List<ScheduleSeatResponse>> findAllScheduleSeats(@PathVariable final Long ticketId,
-                                                                           @PathVariable final Long scheduleId) {
+    public ResponseEntity<List<ScheduleSeatResponse>> findAllScheduleSeats(@PathVariable("ticketId") final Long ticketId,
+                                                                           @PathVariable("scheduleId") final Long scheduleId) {
         final List<ScheduleSeatResponse> scheduleSeatResponses = scheduleService.findAllScheduleSeats(scheduleId);
         return ResponseEntity.ok(scheduleSeatResponses);
     }
