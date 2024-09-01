@@ -1,6 +1,10 @@
 package kr.doridos.dosticket.domain.auth.support.jwt;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import kr.doridos.dosticket.domain.auth.exception.AuthenticationException;
 import kr.doridos.dosticket.domain.auth.exception.InvalidTokenException;
 import kr.doridos.dosticket.exception.ErrorCode;
@@ -11,10 +15,6 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 public class JwtFilter extends OncePerRequestFilter {

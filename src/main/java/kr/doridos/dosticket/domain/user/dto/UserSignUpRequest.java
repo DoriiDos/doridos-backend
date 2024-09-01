@@ -1,15 +1,14 @@
 package kr.doridos.dosticket.domain.user.dto;
 
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import kr.doridos.dosticket.domain.user.entity.EncodedPassword;
 import kr.doridos.dosticket.domain.user.entity.User;
 import kr.doridos.dosticket.domain.user.entity.UserType;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.Length;
-
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Pattern;
 
 @Getter
 @NoArgsConstructor

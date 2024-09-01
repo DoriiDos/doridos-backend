@@ -2,6 +2,8 @@ package kr.doridos.dosticket.domain.auth.support.jwt;
 
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
+import jakarta.annotation.PostConstruct;
+import jakarta.servlet.http.HttpServletRequest;
 import kr.doridos.dosticket.domain.auth.exception.AuthenticationException;
 import kr.doridos.dosticket.domain.auth.exception.InvalidTokenException;
 import kr.doridos.dosticket.domain.user.entity.UserType;
@@ -14,8 +16,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
-import javax.annotation.PostConstruct;
-import javax.servlet.http.HttpServletRequest;
 import java.security.Key;
 import java.util.Base64;
 import java.util.Date;

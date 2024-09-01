@@ -32,7 +32,7 @@ public class ReservationService {
         this.reservationRepository = reservationRepository;
     }
 
-    @DistributedLock(key = "#request.seatIds")
+    @DistributedLock(key = "#arg0", paramIndexes = {0})
     public RegisterReservationResponse registerReservation(final Long userId, final ReservationRequest request) {
         final List<ScheduleSeat> seats = scheduleSeatRepository.findAllById(request.getSeatIds());
         validateSeatsSize(request.getSeatIds(), seats);

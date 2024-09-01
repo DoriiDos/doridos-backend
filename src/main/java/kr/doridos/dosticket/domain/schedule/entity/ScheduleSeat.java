@@ -1,12 +1,12 @@
 package kr.doridos.dosticket.domain.schedule.entity;
 
+import jakarta.persistence.*;
 import kr.doridos.dosticket.domain.place.entity.Section;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity

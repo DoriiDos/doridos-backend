@@ -34,7 +34,7 @@ public class ReservationController {
 
     @GetMapping("/reservations/me/{reservationId}")
     public ResponseEntity<ReservationInfoResponse> getReservationInfo(@AuthenticationPrincipal final UserDetailsImpl userDetails,
-                                                                      @PathVariable final Long reservationId) {
+                                                                      @PathVariable("reservationId") final Long reservationId) {
         return ResponseEntity.ok(reservationService.getReservationInfo(reservationId, userDetails.getUser().getId()));
     }
 }
