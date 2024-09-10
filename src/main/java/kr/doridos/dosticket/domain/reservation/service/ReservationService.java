@@ -66,6 +66,14 @@ public class ReservationService {
         return reservationRepository.findByReservationInfo(reservation);
     }
 
+    public void updateReservationStatusIsBooked(Long reservationId) {
+        final Reservation reservation = reservationRepository.findById(reservationId)
+                .orElseThrow(() -> {throw new ReservationNotFoundException(ErrorCode.RESERVATION_NOT_FOUND); });
+
+        reservation.isBookedStatus();
+        reservationRepository.save(reservation);
+    }
+
     private void validateReservationOwnerShip(Long reservationUserId, Long userId) {
         if (!reservationUserId.equals(userId)) {
             throw new ReservationNotCollectUserException(ErrorCode.RESERVATION_NOT_OWNER);

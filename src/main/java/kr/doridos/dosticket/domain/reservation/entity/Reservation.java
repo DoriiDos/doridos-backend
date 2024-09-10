@@ -48,4 +48,7 @@ public class Reservation {
     @Column(nullable = false)
     private LocalDateTime updateAt;
 
+    public void isBookedStatus() {
+        this.reservationStatus = ReservationStatus.BOOKED;
+    }
 }
