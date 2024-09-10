@@ -1,5 +1,7 @@
 package kr.doridos.dosticket.exception;
 
+import kr.doridos.dosticket.domain.payment.exception.PaymentError;
+import kr.doridos.dosticket.domain.payment.exception.PaymentException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
@@ -34,5 +36,11 @@ public class GlobalExceptionHandler {
     protected ResponseEntity<ErrorResponse> handleInternalServerException(final Exception e) {
         final ErrorResponse response = ErrorResponse.of(ErrorCode.INTERNAL_SERVER_ERROR);
         return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler(PaymentException.class)
+    protected ResponseEntity<PaymentError> handlePaymentException(final PaymentException e) {
+        final PaymentError paymentError = new PaymentError(e.getCode(), e.getMessage());
+        return new ResponseEntity<>(paymentError, e.getStatus());
     }
 }
