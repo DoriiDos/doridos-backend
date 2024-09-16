@@ -1,5 +1,6 @@
 package kr.doridos.dosticket.global.redis.aop;
 
+import kr.doridos.dosticket.domain.reservation.exception.SeatNotFoundException;
 import kr.doridos.dosticket.exception.ErrorCode;
 import kr.doridos.dosticket.global.redis.DistributedLock;
 import kr.doridos.dosticket.global.redis.util.DistributedLockKeyGenerator;
@@ -35,6 +36,11 @@ public class DistributedLockAop {
         int[] paramIndexes = distributedLock.paramIndexes();
 
         List<Long> seatIds = DistributedLockKeyGenerator.generateKeys(paramIndexes, joinPoint.getArgs(), distributedLock.key());
+
+        if(seatIds.size() == 0) {
+            throw new SeatNotFoundException(ErrorCode.SEAT_NOT_FOUND);
+        }
+        
         List<RLock> seatLocks = new ArrayList<>();
 
         for (Long seatId : seatIds) {
