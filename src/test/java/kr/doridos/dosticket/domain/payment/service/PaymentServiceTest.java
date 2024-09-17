@@ -1,12 +1,15 @@
 package kr.doridos.dosticket.domain.payment.service;
 
 import kr.doridos.dosticket.domain.payment.controller.PaymentClient;
+import kr.doridos.dosticket.domain.payment.dto.PaymentCancelRequest;
+import kr.doridos.dosticket.domain.payment.dto.PaymentCancelResponse;
 import kr.doridos.dosticket.domain.payment.dto.PaymentConfirmRequest;
 import kr.doridos.dosticket.domain.payment.dto.PaymentConfirmResponse;
 import kr.doridos.dosticket.domain.payment.entity.Payment;
 import kr.doridos.dosticket.domain.payment.entity.PaymentStatus;
 import kr.doridos.dosticket.domain.payment.exception.PaymentException;
 import kr.doridos.dosticket.domain.payment.repository.PaymentRepository;
+import kr.doridos.dosticket.domain.payment.service.event.PaymentCancelEvent;
 import kr.doridos.dosticket.domain.payment.service.event.PaymentConfirmedEvent;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
@@ -19,6 +22,7 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 
 import java.time.ZonedDateTime;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -76,5 +80,24 @@ class PaymentServiceTest {
 
         verify(paymentRepository, never()).save(any(Payment.class));
         verify(eventPublisher, never()).publishEvent(any(PaymentConfirmedEvent.class));
+    }
+
+    @Test
+    void 결제_취소_성공() {
+        String paymentKey = "paymentKey";
+        Payment payment = Payment.builder()
+                .paymentKey(paymentKey)
+                .build();
+        PaymentCancelRequest request = new PaymentCancelRequest("단순 변심");
+        PaymentCancelResponse response = new PaymentCancelResponse("paymentKey", "payment1", "orderName", PaymentStatus.CANCELED, ZonedDateTime.now(), ZonedDateTime.now());
+
+        given(paymentRepository.findById(1L)).willReturn(Optional.of(payment));
+        given(paymentClient.cancelPayment(paymentKey, request)).willReturn(response);
+
+        PaymentCancelResponse result = paymentService.cancelPayment(request, 1L);
+
+        assertThat(result).isEqualTo(response);
+        verify(paymentRepository, times(1)).save(any(Payment.class));
+        verify(eventPublisher, times(1)).publishEvent(any(PaymentCancelEvent.class));
     }
 }
