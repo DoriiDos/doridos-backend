@@ -66,11 +66,21 @@ public class ReservationService {
         return reservationRepository.findByReservationInfo(reservation);
     }
 
+    @Transactional
     public void updateReservationStatusIsBooked(Long reservationId) {
         final Reservation reservation = reservationRepository.findById(reservationId)
                 .orElseThrow(() -> {throw new ReservationNotFoundException(ErrorCode.RESERVATION_NOT_FOUND); });
 
         reservation.isBookedStatus();
+        reservationRepository.save(reservation);
+    }
+
+    @Transactional
+    public void updateReservationStatusIsCanceled(Long reservationId) {
+        final Reservation reservation = reservationRepository.findById(reservationId)
+                .orElseThrow(() -> {throw new ReservationNotFoundException(ErrorCode.RESERVATION_NOT_FOUND); });
+
+        reservation.isCanceledStatus();
         reservationRepository.save(reservation);
     }
 
