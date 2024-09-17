@@ -51,4 +51,8 @@ public class Reservation {
     public void isBookedStatus() {
         this.reservationStatus = ReservationStatus.BOOKED;
     }
+
+    public void isCanceledStatus() {
+        this.reservationStatus = ReservationStatus.CANCELED;
+    }
 }

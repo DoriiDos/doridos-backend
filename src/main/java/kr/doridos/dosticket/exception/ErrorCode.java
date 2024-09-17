@@ -39,7 +39,8 @@ public enum ErrorCode {
     LOCK_INTERRUPTED(400, "L002" ,"LOCK Interrupted exception" ),
 
     RESERVATION_NOT_FOUND(400, "R001" , "예매가 존재하지 않습니다."),
-    RESERVATION_NOT_OWNER(401,"R002" , "해당 예매 내역에 접근할 수 없습니다.");
+    RESERVATION_NOT_OWNER(401,"R002" , "해당 예매 내역에 접근할 수 없습니다."),
+    PAYMENT_NOT_FOUND(400,"P001", "결제내역이 존재하지 않습니다.");
 
     private final int status;
     private final String code;
