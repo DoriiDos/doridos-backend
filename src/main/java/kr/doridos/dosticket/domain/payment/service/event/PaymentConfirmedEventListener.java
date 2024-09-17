@@ -21,4 +21,10 @@ public class PaymentConfirmedEventListener {
     public void handlePaymentConfirmedEvent(PaymentConfirmedEvent event) {
         reservationService.updateReservationStatusIsBooked(event.getReservationId());
     }
+
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+    public void handlePaymentCancelEvent(PaymentCancelEvent event) {
+        reservationService.updateReservationStatusIsCanceled(event.getReservationId());
+    }
 }
