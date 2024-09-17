@@ -1,16 +1,14 @@
 package kr.doridos.dosticket.domain.payment.entity;
 
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.ZonedDateTime;
 
 @Entity
 @Table
 @Getter
+@Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 public class Payment {
@@ -40,5 +38,11 @@ public class Payment {
         this.reservationId = reservationId;
         this.status = status;
         this.userId = userId;
+    }
+
+    public void changeStatus(PaymentStatus status, ZonedDateTime requestedAt, ZonedDateTime approvedAt) {
+        this.status = status;
+        this.requestedAt = requestedAt;
+        this.approvedAt = approvedAt;
     }
 }
