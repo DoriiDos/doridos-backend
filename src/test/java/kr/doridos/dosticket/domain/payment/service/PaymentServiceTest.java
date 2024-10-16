@@ -7,10 +7,11 @@ import kr.doridos.dosticket.domain.payment.dto.PaymentConfirmRequest;
 import kr.doridos.dosticket.domain.payment.dto.PaymentConfirmResponse;
 import kr.doridos.dosticket.domain.payment.entity.Payment;
 import kr.doridos.dosticket.domain.payment.entity.PaymentStatus;
-import kr.doridos.dosticket.domain.payment.exception.PaymentException;
+import kr.doridos.dosticket.domain.payment.exception.PaymentAlreadyProcessedException;
 import kr.doridos.dosticket.domain.payment.repository.PaymentRepository;
 import kr.doridos.dosticket.domain.payment.service.event.PaymentCancelEvent;
 import kr.doridos.dosticket.domain.payment.service.event.PaymentConfirmedEvent;
+import kr.doridos.dosticket.exception.ErrorCode;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Test;
@@ -19,10 +20,13 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.http.HttpStatus;
+import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
+
 
 import java.time.ZonedDateTime;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -30,11 +34,16 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
 
-
 @ExtendWith(MockitoExtension.class)
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 @SuppressWarnings("NonAsciiCharacters")
 class PaymentServiceTest {
+
+    @Mock
+    private StringRedisTemplate redisTemplate;
+
+    @Mock
+    private ValueOperations<String, String> valueOperations;
 
     @Mock
     private PaymentClient paymentClient;
@@ -50,13 +59,16 @@ class PaymentServiceTest {
 
     @Test
     void 결제_확인_성공() {
+        // Given
         Long reservationId = 1L;
         Long userId = 1L;
         PaymentConfirmRequest paymentConfirmRequest = new PaymentConfirmRequest("payment1", 10000, "paymentKey");
         PaymentConfirmResponse paymentConfirmResponse = new PaymentConfirmResponse(
-                "paymentKey", "payment1", "orderName", 1000, ZonedDateTime.now(), ZonedDateTime.now(), PaymentStatus.DONE
-        );
+                "paymentKey", "payment1", "orderName", 1000, ZonedDateTime.now(), ZonedDateTime.now(), PaymentStatus.DONE);
+        String idempotencyKey = "payment:confirm:" + paymentConfirmRequest.getOrderId();
 
+        given(redisTemplate.opsForValue()).willReturn(valueOperations);
+        given(valueOperations.setIfAbsent(idempotencyKey, "success", 10, TimeUnit.SECONDS)).willReturn(true);
         given(paymentClient.confirmPayment(paymentConfirmRequest)).willReturn(paymentConfirmResponse);
 
         PaymentConfirmResponse result = paymentService.confirmPayment(paymentConfirmRequest, reservationId, userId);
@@ -71,12 +83,14 @@ class PaymentServiceTest {
         Long reservationId = 1L;
         Long userId = 1L;
         PaymentConfirmRequest paymentConfirmRequest = new PaymentConfirmRequest("payment1", 10000, "paymentKey");
+        String idempotencyKey = "payment:confirm:" + paymentConfirmRequest.getOrderId();
 
-        given(paymentClient.confirmPayment(paymentConfirmRequest)).willThrow(new PaymentException("결제 실패", "PaymentError", HttpStatus.BAD_REQUEST));
+        given(redisTemplate.opsForValue()).willReturn(valueOperations);
+        given(valueOperations.setIfAbsent(idempotencyKey, "success", 10, TimeUnit.SECONDS)).willReturn(false); // 이미 존재한다고 가정
 
         assertThatThrownBy(() -> paymentService.confirmPayment(paymentConfirmRequest, reservationId, userId))
-                .isInstanceOf(PaymentException.class)
-                .hasMessage("결제 실패");
+                .isInstanceOf(PaymentAlreadyProcessedException.class)
+                .hasMessage(ErrorCode.PAYMENT_ALREADY_PROCESSED.getMessage());
 
         verify(paymentRepository, never()).save(any(Payment.class));
         verify(eventPublisher, never()).publishEvent(any(PaymentConfirmedEvent.class));
