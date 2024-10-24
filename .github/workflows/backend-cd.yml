@@ -10,6 +10,13 @@ on:
 jobs:
   docker-build:
     runs-on: ubuntu-latest
+
+    services:
+      redis:
+        image: redis:latest
+        ports:
+          - 6379:6379
+
     steps:
       - name: 저장소 chekcout
         uses: actions/checkout@v3
